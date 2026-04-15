@@ -50,7 +50,6 @@ taller_aplicado_programacion_grupo_3/
 ```bash
 # Backend
 cp backend/.env.example backend/.env
-# Edita backend/.env con tus credenciales de BD y OpenAI API Key
 
 # Frontend
 cp frontend/.env.example frontend/.env
