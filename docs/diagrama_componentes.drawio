@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1654" dy="1169" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ══ ACTOR ══ -->
+    <mxCell id="10" value="Usuario" style="shape=umlActor;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="50" y="460" width="60" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- ══ FRONTEND ══ -->
+    <mxCell id="20" value="&lt;&lt;component&gt;&gt;&lt;br&gt;&lt;b&gt;Frontend — React + Vite&lt;/b&gt;" style="swimlane;startSize=50;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;arcSize=3;horizontal=1;" vertex="1" parent="1">
+      <mxGeometry x="160" y="30" width="640" height="860" as="geometry" />
+    </mxCell>
+
+    <!-- Enrutamiento -->
+    <mxCell id="21" value="Enrutamiento" style="swimlane;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry x="20" y="65" width="600" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="211" value="ReactRouter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="21">
+      <mxGeometry x="15" y="38" width="165" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="212" value="PrivateRoute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="21">
+      <mxGeometry x="215" y="38" width="165" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="213" value="RoleRoute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="21">
+      <mxGeometry x="415" y="38" width="165" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Páginas -->
+    <mxCell id="22" value="Páginas" style="swimlane;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry x="20" y="185" width="600" height="145" as="geometry" />
+    </mxCell>
+    <mxCell id="221" value="&lt;b&gt;Públicas&lt;/b&gt;&lt;br&gt;Home · Ferias&lt;br&gt;Mapa · Feriantes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="22">
+      <mxGeometry x="10" y="38" width="135" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="222" value="&lt;b&gt;Auth&lt;/b&gt;&lt;br&gt;Login&lt;br&gt;Registro" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="22">
+      <mxGeometry x="160" y="38" width="135" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="223" value="&lt;b&gt;Privadas&lt;/b&gt;&lt;br&gt;Chat · Perfil&lt;br&gt;ListaCompras" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="22">
+      <mxGeometry x="310" y="38" width="135" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="224" value="&lt;b&gt;Admin&lt;/b&gt;&lt;br&gt;Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="22">
+      <mxGeometry x="460" y="38" width="125" height="75" as="geometry" />
+    </mxCell>
+
+    <!-- Estado -->
+    <mxCell id="23" value="Estado Global" style="swimlane;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry x="20" y="350" width="280" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="231" value="authStore&lt;br&gt;(Zustand)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="23">
+      <mxGeometry x="10" y="38" width="120" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="232" value="React Query&lt;br&gt;(caché HTTP)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="23">
+      <mxGeometry x="148" y="38" width="120" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Servicios HTTP -->
+    <mxCell id="24" value="Servicios HTTP (Axios)" style="swimlane;startSize=28;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry x="320" y="350" width="300" height="195" as="geometry" />
+    </mxCell>
+    <mxCell id="241" value="api.js&lt;br&gt;(Axios + interceptores JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="24">
+      <mxGeometry x="10" y="35" width="275" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="242" value="authService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="24">
+      <mxGeometry x="10" y="90" width="125" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="243" value="feriaService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="24">
+      <mxGeometry x="150" y="90" width="130" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="244" value="reseñaService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="24">
+      <mxGeometry x="10" y="140" width="125" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="245" value="chatService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="24">
+      <mxGeometry x="150" y="140" width="130" height="35" as="geometry" />
+    </mxCell>
+
+    <!-- Leaflet Map -->
+    <mxCell id="25" value="&lt;&lt;component&gt;&gt; Leaflet Map (react-leaflet)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry x="20" y="565" width="600" height="45" as="geometry" />
+    </mxCell>
+
+    <!-- ══ BACKEND ══ -->
+    <mxCell id="30" value="&lt;&lt;component&gt;&gt;&lt;br&gt;&lt;b&gt;Backend — Node.js + Express&lt;/b&gt;" style="swimlane;startSize=50;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;arcSize=3;" vertex="1" parent="1">
+      <mxGeometry x="870" y="30" width="640" height="860" as="geometry" />
+    </mxCell>
+
+    <!-- Seguridad -->
+    <mxCell id="31" value="Seguridad &amp; Logging" style="swimlane;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="20" y="65" width="600" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="311" value="Helmet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="31">
+      <mxGeometry x="10" y="35" width="130" height="38" as="geometry" />
+    </mxCell>
+    <mxCell id="312" value="CORS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="31">
+      <mxGeometry x="155" y="35" width="130" height="38" as="geometry" />
+    </mxCell>
+    <mxCell id="313" value="RateLimiter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="31">
+      <mxGeometry x="300" y="35" width="130" height="38" as="geometry" />
+    </mxCell>
+    <mxCell id="314" value="Morgan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="31">
+      <mxGeometry x="445" y="35" width="130" height="38" as="geometry" />
+    </mxCell>
+
+    <!-- Rutas REST -->
+    <mxCell id="32" value="Rutas REST (/api/*)" style="swimlane;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="20" y="175" width="600" height="115" as="geometry" />
+    </mxCell>
+    <mxCell id="321" value="/auth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="32">
+      <mxGeometry x="10" y="35" width="85" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="322" value="/ferias" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="32">
+      <mxGeometry x="105" y="35" width="85" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="323" value="/feriantes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="32">
+      <mxGeometry x="200" y="35" width="90" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="324" value="/resenas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="32">
+      <mxGeometry x="300" y="35" width="85" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="325" value="/listas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="32">
+      <mxGeometry x="395" y="35" width="85" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="326" value="/ia" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="32">
+      <mxGeometry x="490" y="35" width="85" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="327" value="(express-rate-limit aplicado a todas las rutas)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=2;align=left;" vertex="1" parent="32">
+      <mxGeometry x="10" y="78" width="400" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- Middleware -->
+    <mxCell id="33" value="Middleware" style="swimlane;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="20" y="310" width="600" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="331" value="auth.js&lt;br&gt;(Verificación JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="33">
+      <mxGeometry x="10" y="35" width="180" height="45" as="geometry" />
+    </mxCell>
+    <mxCell id="332" value="express-validator&lt;br&gt;(Validación de inputs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="33">
+      <mxGeometry x="205" y="35" width="185" height="45" as="geometry" />
+    </mxCell>
+    <mxCell id="333" value="errorHandler&lt;br&gt;(Manejo global de errores)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="33">
+      <mxGeometry x="405" y="35" width="185" height="45" as="geometry" />
+    </mxCell>
+
+    <!-- Controladores -->
+    <mxCell id="34" value="Controladores" style="swimlane;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="20" y="430" width="600" height="105" as="geometry" />
+    </mxCell>
+    <mxCell id="341" value="auth.controller&lt;br&gt;(login, register)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="34">
+      <mxGeometry x="10" y="35" width="138" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="342" value="feria.controller&lt;br&gt;(CRUD ferias)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="34">
+      <mxGeometry x="158" y="35" width="138" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="343" value="resena.controller&lt;br&gt;(CRUD reseñas)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="34">
+      <mxGeometry x="306" y="35" width="138" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="344" value="ia.controller&lt;br&gt;(Chat con IA)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="34">
+      <mxGeometry x="454" y="35" width="130" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Modelos -->
+    <mxCell id="35" value="Modelos — Sequelize ORM" style="swimlane;startSize=28;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="20" y="555" width="600" height="145" as="geometry" />
+    </mxCell>
+    <mxCell id="351" value="Usuario" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="35">
+      <mxGeometry x="10" y="38" width="85" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="352" value="Feria" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="35">
+      <mxGeometry x="105" y="38" width="85" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="353" value="Feriante" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="35">
+      <mxGeometry x="200" y="38" width="85" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="354" value="Reseña" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="35">
+      <mxGeometry x="295" y="38" width="85" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="355" value="Horario" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="35">
+      <mxGeometry x="390" y="38" width="85" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="356" value="ListaCompras" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="35">
+      <mxGeometry x="485" y="38" width="100" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="357" value="Asociaciones: Usuario 1:1 Feriante · Usuario 1:N Reseña · Usuario 1:N ListaCompras · Feria 1:N Reseña · Feria 1:N Horario · Feria N:M Feriante (PuestoFeriante)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=2;align=left;" vertex="1" parent="35">
+      <mxGeometry x="10" y="88" width="580" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- connection.js -->
+    <mxCell id="36" value="connection.js  (Pool Sequelize + pg)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry x="20" y="720" width="600" height="45" as="geometry" />
+    </mxCell>
+
+    <!-- ══ BASE DE DATOS ══ -->
+    <mxCell id="40" value="&lt;&lt;component&gt;&gt;&lt;br&gt;&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;conyapa_db" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1580" y="510" width="150" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- ══ APIS EXTERNAS ══ -->
+    <mxCell id="51" value="&lt;&lt;component&gt;&gt;&lt;br&gt;&lt;b&gt;OpenAI API&lt;/b&gt;&lt;br&gt;(GPT - Chat IA)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1580" y="150" width="150" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="52" value="&lt;&lt;component&gt;&gt;&lt;br&gt;&lt;b&gt;OpenStreetMap&lt;/b&gt;&lt;br&gt;(Tiles del mapa)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="50" y="950" width="150" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- ══ CONEXIONES ══ -->
+
+    <!-- Usuario → Frontend -->
+    <mxCell id="e1" value="HTTP/S" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" source="10" target="20" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Servicios HTTP → Rutas REST -->
+    <mxCell id="e2" value="REST API&lt;br&gt;(Authorization: Bearer JWT)" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" source="24" target="32" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Flujo interno Backend -->
+    <mxCell id="e3" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="31" target="32" parent="30">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e4" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="32" target="33" parent="30">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e5" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="33" target="34" parent="30">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e6" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="34" target="35" parent="30">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e7" value="" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;" edge="1" source="35" target="36" parent="30">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- connection.js → PostgreSQL -->
+    <mxCell id="e8" value="TCP 5432" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" source="36" target="40" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- ia.controller → OpenAI -->
+    <mxCell id="e9" value="HTTPS / REST" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;" edge="1" source="344" target="51" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- LeafletMap → OpenStreetMap -->
+    <mxCell id="e10" value="HTTPS (tiles)" style="endArrow=block;endFill=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;" edge="1" source="25" target="52" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>
