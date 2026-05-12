@@ -22,11 +22,11 @@ function MapUpdater({ center, zoom }) {
 // Icono personalizado c: me falta areglar la sombra del pin
 const userLocationIcon = L.icon({
     iconUrl: pinIcono,
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // Puedes mantener esta o usar una sombra personalizada
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', 
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
-    shadowSize: [41, 41], // Ajusta si usas una sombra personalizada
+    shadowSize: [41, 41], 
 });
 
 const DEFAULT_CENTER = [-33.4489, -70.6693] // Santiago, Chile
