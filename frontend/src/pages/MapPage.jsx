@@ -19,7 +19,7 @@ function MapUpdater({ center, zoom }) {
     return null
 }
 
-// Icono personalizado c:
+// Icono personalizado c: me falta areglar la sombra del pin
 const userLocationIcon = L.icon({
     iconUrl: pinIcono,
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', // Puedes mantener esta o usar una sombra personalizada
