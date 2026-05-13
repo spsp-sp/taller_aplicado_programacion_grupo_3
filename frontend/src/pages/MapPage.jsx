@@ -22,11 +22,11 @@ function MapUpdater({ center, zoom }) {
 // Icono personalizado c: me falta areglar la sombra del pin
 const userLocationIcon = L.icon({
     iconUrl: pinIcono,
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', 
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
-    shadowSize: [41, 41], 
+    shadowSize: [41, 41],
 });
 
 const DEFAULT_CENTER = [-33.4489, -70.6693] // Santiago, Chile
@@ -40,14 +40,8 @@ export default function MapPage() {
     const { data: ferias = [] } = useFeriasNearby({
         lat: position?.lat,
         lng: position?.lng,
-        radius: 5000,
+        radius: 500000,
     })
-
-  const { data: ferias = [] } = useFeriasNearby({
-    lat: position?.lat,
-    lng: position?.lng,
-    radius: 50000,
-  })
 
     // Forzar re-render del mapa cuando cambia la posición
     useEffect(() => {
@@ -95,7 +89,7 @@ export default function MapPage() {
                                 <div className="text-center">
                                     <p className="font-semibold text-sm">Tu ubicación</p>
                                     <p className="text-xs text-gray-500 mt-1">
-                                        {position.lat.toFixed(4 )}, {position.lng.toFixed(4)}
+                                        {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
                                     </p>
                                 </div>
                             </Popup>
