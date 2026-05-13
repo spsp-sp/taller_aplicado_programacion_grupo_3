@@ -40,7 +40,7 @@ export default function MapPage() {
   const { data: ferias = [] } = useFeriasNearby({
     lat: position?.lat,
     lng: position?.lng,
-    radius: 500000,
+    radius: 500000, //Radio de 500mil km para pruebas, reducir a 20km en produccion
   })
 
   // Forzar re-render del mapa cuando cambia la posición
