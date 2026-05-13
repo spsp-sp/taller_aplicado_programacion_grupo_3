@@ -25,6 +25,16 @@ const Feriante = sequelize.define('Feriante', {
   telefono: {
     type: DataTypes.STRING(20),
   },
+  comuna: {
+    type: DataTypes.STRING(100),
+  },
+  dias: {
+    type: DataTypes.STRING(255), // Ejemplo: "Lunes, Miércoles, Sábado"
+  },
+  estado: {
+    type: DataTypes.ENUM('pendiente', 'aprobado', 'rechazado'),
+    defaultValue: 'pendiente',
+  },
   activo: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,

@@ -14,7 +14,7 @@ export default function MapPage() {
   const { data: ferias = [] } = useFeriasNearby({
     lat: position?.lat,
     lng: position?.lng,
-    radius: 5000,
+    radius: 50000,
   })
 
   useEffect(() => {

@@ -41,7 +41,7 @@ export default function App() {
         <Routes>
           {/* Public routes with main layout */}
           <Route element={<MainLayout />}>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<MapPage />} />
             <Route path="/mapa" element={<MapPage />} />
             <Route path="/ferias" element={<FeriasPage />} />
             <Route path="/ferias/:id" element={<FeriaDetailPage />} />

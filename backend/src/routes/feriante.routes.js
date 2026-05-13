@@ -1,27 +1,18 @@
 const router = require('express').Router()
-const { Feriante } = require('../models')
+const ferianteController = require('../controllers/feriante.controller')
 const { verifyToken, requireRole } = require('../middleware/auth')
 
-router.get('/', async (req, res, next) => {
-  try {
-    const feriantes = await Feriante.findAll({ where: { activo: true } })
-    res.json(feriantes)
-  } catch (err) { next(err) }
-})
+// Rutas Públicas
+router.get('/', ferianteController.getAll)
+router.get('/:id', ferianteController.getById)
 
-router.get('/:id', async (req, res, next) => {
-  try {
-    const feriante = await Feriante.findByPk(req.params.id)
-    if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
-    res.json(feriante)
-  } catch (err) { next(err) }
-})
+// Rutas Protegidas (Feriantes y Admin)
+router.post('/', verifyToken, requireRole('feriante', 'admin'), ferianteController.create)
+router.put('/:id', verifyToken, requireRole('feriante', 'admin'), ferianteController.update)
+router.delete('/:id', verifyToken, requireRole('feriante', 'admin'), ferianteController.remove)
 
-router.post('/', verifyToken, requireRole('feriante', 'admin'), async (req, res, next) => {
-  try {
-    const feriante = await Feriante.create({ ...req.body, usuarioId: req.user.id })
-    res.status(201).json(feriante)
-  } catch (err) { next(err) }
-})
+// Rutas de Administración (Solo Admin)
+router.patch('/:id/aprobar', verifyToken, requireRole('admin'), ferianteController.approve)
+router.patch('/:id/rechazar', verifyToken, requireRole('admin'), ferianteController.reject)
 
 module.exports = router
