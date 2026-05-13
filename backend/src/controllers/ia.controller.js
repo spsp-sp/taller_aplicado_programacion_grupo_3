@@ -9,10 +9,7 @@ Ayudas a los usuarios a:
 - Resolver dudas sobre las ferias y feriantes
 Responde siempre en español chileno, de forma amable y concisa.`
 
-/**
- * Crea el cliente OpenAI de forma lazy.
- * Lanza un error legible si la API key no está disponible.
- */
+
 function getClient() {
 
 }
@@ -22,4 +19,4 @@ const recomendaciones = async (req, res, next) => {
 
 }
 
-module.exports = { chat, recomendaciones }
+module.exports = { recomendaciones }

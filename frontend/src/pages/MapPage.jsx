@@ -43,9 +43,11 @@ export default function MapPage() {
         radius: 5000,
     })
 
-    useEffect(() => {
-        getPosition()
-    }, [getPosition])
+  const { data: ferias = [] } = useFeriasNearby({
+    lat: position?.lat,
+    lng: position?.lng,
+    radius: 50000,
+  })
 
     // Forzar re-render del mapa cuando cambia la posición
     useEffect(() => {
