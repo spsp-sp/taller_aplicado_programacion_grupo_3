@@ -1,9 +1,9 @@
-# ConYapa 🛒🗺️
+# ConYapa 
 > Plataforma web para descubrir ferias libres y feriantes locales — Proyecto académico DUOC UC
 
 ---
 
-## 🏗️ Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 taller_aplicado_programacion_grupo_3/
@@ -39,7 +39,7 @@ taller_aplicado_programacion_grupo_3/
 
 ---
 
-## 🚀 Inicio Rápido
+##  Inicio Rápido
 
 ### Requisitos previos
 - Node.js 18+
@@ -85,21 +85,21 @@ La app estará disponible en **http://localhost:5173**
 
 ---
 
-## 🌿 Ramas de desarrollo
+## Ramas de desarrollo
 
 | Rama | Módulo |
 |------|--------|
 | `main` | Producción estable |
-| `feature/mapa` | Mapa interactivo Leaflet |
-| `feature/resenas` | Sistema de reseñas |
-| `feature/feriantes` | Directorio de feriantes |
-| `feature/ia` | Asistente conversacional |
-| `feature/auth` | Autenticación y roles |
-| `feature/lista-compras` | Lista de compras con IA |
+| `/mapa` | Mapa interactivo Leaflet |
+| `/resenas` | Sistema de reseñas |
+| `/feriantes` | Directorio de feriantes |
+| `/ia` | Asistente conversacional |
+| `/aut` | Autenticación y roles |
+| `/lista-compras` | Lista de compras con IA |
 
 ---
 
-## 📡 API Endpoints
+##  API Endpoints
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
@@ -117,7 +117,7 @@ La app estará disponible en **http://localhost:5173**
 
 ---
 
-## 🧪 Tests
+##  Tests
 
 ```bash
 cd backend && npm test
