@@ -5,6 +5,7 @@ import L from 'leaflet'
 import useGeolocation from '@hooks/useGeolocation'
 import { useFeriasNearby } from '@hooks/useFerias'
 import pinIcono from '../assets/image/pin1.png';
+import pinFeria from '../assets/image/pin4.png';
 
 
 function MapUpdater({ center, zoom }) {
@@ -23,10 +24,22 @@ function MapUpdater({ center, zoom }) {
 const userLocationIcon = L.icon({
   iconUrl: pinIcono,
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40],
   shadowSize: [41, 41],
+  shadowAnchor: [13, 41]
+});
+
+// Icono personalizado para las ferias
+const feriaIcono = L.icon({
+  iconUrl: pinFeria,
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40],
+  shadowSize: [41, 41],
+  shadowAnchor: [13, 41]
 });
 
 const DEFAULT_CENTER = [-33.4489, -70.6693] // Santiago, Chile
@@ -40,7 +53,7 @@ export default function MapPage() {
   const { data: ferias = [] } = useFeriasNearby({
     lat: position?.lat,
     lng: position?.lng,
-    radius: 500000, //Radio de 500mil km para pruebas, reducir a 20km en produccion
+    radius: 500000,
   })
 
   // Forzar re-render del mapa cuando cambia la posición
@@ -98,7 +111,7 @@ export default function MapPage() {
 
           {/* Marcadores de ferias cercanas */}
           {ferias.map((feria) => (
-            <Marker key={feria.id} position={[feria.latitud, feria.longitud]}>
+            <Marker key={feria.id} position={[feria.latitud, feria.longitud]} icon={feriaIcono} >
               <Popup>
                 <div className="min-w-[160px]">
                   <h3 className="font-semibold text-sm">{feria.nombre}</h3>
