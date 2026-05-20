@@ -1,16 +1,25 @@
-const { Feria, Feriante, Resena, Horario, Usuario } = require('../models')
+const { Feria, Feriante, Resena, Usuario, Ubicacion, DiaFeria, Comuna } = require('../models')
 const { Op } = require('sequelize')
 
 // GET /api/ferias
 const getAll = async (req, res, next) => {
     try {
-        const { tipo, activa = true } = req.query
-        const where = { activa }
+        const { tipo, activa = true, comunaId} = req.query
+        const where = { activa: activa === 'true' || activa === true }
+
         if (tipo) where.tipo = tipo
+        if (comunaId) where.comunaId = comunaId
 
         const ferias = await Feria.findAll({
             where,
-            include: [{ model: Horario, as: 'horarios' }],
+            include: [
+                {model: Comuna, as: 'comuna'},
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    include: [{model: DiaFeria, as: 'diasFeria'}]
+                }
+            ],
             order: [['nombre', 'ASC']],
         })
         res.json(ferias)
@@ -25,16 +34,22 @@ const getNearby = async (req, res, next) => {
         const { lat, lng, radius = 5000 } = req.query
         if (!lat || !lng) return res.status(400).json({ message: 'lat y lng son requeridos.' })
 
-        // Haversine filter using raw SQL (compatible with PostgreSQL)
         const ferias = await Feria.findAll({
-            where: {
-                activa: true,
-                [Op.and]: Feria.sequelize.literal(
-                    `(6371000 * acos(cos(radians(${lat})) * cos(radians(latitud)) *
-           cos(radians(longitud) - radians(${lng})) +
-           sin(radians(${lat})) * sin(radians(latitud)))) < ${radius}`
-                ),
-            },
+            where: { activa: true },
+            include: [
+                { model: Comuna, as: 'comuna' },
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    required: true,
+                    where: Feria.sequelize.literal(
+                        `(6371000 * acos(cos(radians(${lat})) * cos(radians(ubicaciones.latitud)) * 
+                        cos(radians(ubicaciones.longitud) - radians(${lng})) +
+                        sin(radians(${lat})) * sin(radians(ubicaciones.latitud)))) < ${radius}`
+                    ),
+                    include: [{ model: DiaFeria, as: 'diasFeria' }]
+                }
+            ]
         })
         res.json(ferias)
     } catch (err) {
@@ -47,12 +62,26 @@ const getById = async (req, res, next) => {
     try {
         const feria = await Feria.findByPk(req.params.id, {
             include: [
-                { model: Horario, as: 'horarios' },
+                { model: Comuna, as: 'comuna' },
+                {
+                  model: Ubicacion,
+                  as: 'ubicaciones',
+                  include: [{model: DiaFeria, as: 'diaFerias'}]
+                },
                 {
                     model: Resena, as: 'resenas',
                     include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre'] }],
                 },
-                { model: Feriante, as: 'feriantes', attributes: ['id', 'nombre', 'rubro'] },
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    include: [{
+                        model: Feriante,
+                        as: 'feriantes',
+                        attributes: ['id', 'nombre', 'rubro'],
+                        through: {attributes:[]}
+                    }]
+                },
             ],
         })
         if (!feria) return res.status(404).json({ message: 'Feria no encontrada.' })
@@ -65,7 +94,16 @@ const getById = async (req, res, next) => {
 // POST /api/ferias
 const create = async (req, res, next) => {
     try {
-        const feria = await Feria.create(req.body)
+
+        const feria = await Feria.create(req.body, {
+            include: [
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    include: [{ model: DiaFeria, as: 'diasFeria' }]
+                }
+            ]
+        })
         res.status(201).json(feria)
     } catch (err) {
         next(err)

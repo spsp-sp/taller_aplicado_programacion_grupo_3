@@ -94,7 +94,7 @@ export default function FeriantesPage() {
                       {f.dias || 'Días no especificados'}
                     </span>
                     <span className="text-sm text-gray-500">•</span>
-                    <span className="text-sm text-gray-500">{f.comuna || 'Comuna no especificada'}</span>
+                    <span className="text-sm text-gray-500">{f.comuna?.nombre || 'Comuna no especificada'}</span>
                   </div>
                 </div>
                 <button
@@ -112,12 +112,15 @@ export default function FeriantesPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Información de Ferias</h4>
-                      {f.ferias && f.ferias.length > 0 ? (
+                      {f.ubicaciones && f.ubicaciones.length > 0 ? (
                         <ul className="space-y-3">
-                          {f.ferias.map(feria => (
-                            <li key={feria.id} className="text-sm">
-                              <span className="font-bold text-gray-700 block">{feria.nombre}</span>
-                              <span className="text-gray-500">{feria.direccion}</span>
+                          {f.ubicaciones.map(ubi => (
+                            <li key={ubi.id} className="text-sm">
+                              <span className="font-bold text-gray-700 block">{ubi.feria?.nombre || 'Feria'}</span>
+                              <span className="text-gray-500">
+                                {ubi.callePrincipal}
+                                {ubi.calleInicio && ` (e/ ${ubi.calleInicio} y ${ubi.calleTermino})`}
+                              </span>
                             </li>
                           ))}
                         </ul>

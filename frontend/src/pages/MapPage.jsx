@@ -110,22 +110,31 @@ export default function MapPage() {
           )}
 
           {/* Marcadores de ferias cercanas */}
-          {ferias.map((feria) => (
-            <Marker key={feria.id} position={[feria.latitud, feria.longitud]} icon={feriaIcono} >
-              <Popup>
-                <div className="min-w-[160px]">
-                  <h3 className="font-semibold text-sm">{feria.nombre}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{feria.direccion}</p>
-                  <a
-                    href={`/ferias/${feria.id}`}
-                    className="text-xs text-primary-600 hover:underline mt-2 block"
-                  >
-                    Ver detalle →
-                  </a>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {ferias.map((feria) =>
+            feria.ubicaciones?.map((ubicacion) => (
+              <Marker
+                key={`${feria.id}-${ubicacion.id}`}
+                position={[Number(ubicacion.latitud), Number(ubicacion.longitud)]}
+                icon={feriaIcono}
+              >
+                <Popup>
+                  <div className="min-w-[160px]">
+                    <h3 className="font-semibold text-sm">{feria.nombre}</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {ubicacion.callePrincipal}
+                      {ubicacion.calleInicio && ` (e/ ${ubicacion.calleInicio} y ${ubicacion.calleTermino})`}
+                    </p>
+                    <a
+                      href={`/ferias/${feria.id}`}
+                      className="text-xs text-primary-600 hover:underline mt-2 block"
+                    >
+                      Ver detalle →
+                    </a>
+                  </div>
+                </Popup>
+              </Marker>
+            ))
+          )}
 
           {/* Actualizar vista del mapa cuando cambia el centro */}
           <MapUpdater center={center} zoom={DEFAULT_ZOOM} />

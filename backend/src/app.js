@@ -10,6 +10,7 @@ const ferianteRoutes = require('./routes/feriante.routes')
 const reseñaRoutes   = require('./routes/resena.routes')
 const listaRoutes    = require('./routes/lista.routes')
 const iaRoutes       = require('./routes/ia.routes')
+const comunaRoutes    = require('./routes/comuna.routes')
 const errorHandler   = require('./middleware/errorHandler')
 
 const app = express()
@@ -47,6 +48,7 @@ app.use('/api/feriantes', ferianteRoutes)
 app.use('/api/resenas',   reseñaRoutes)
 app.use('/api/listas',    listaRoutes)
 app.use('/api/ia',        iaRoutes)
+app.use('/api/comunas',    comunaRoutes)
 
 // ── Global error handler ───────────────────────────────────────────────────
 app.use(errorHandler)
