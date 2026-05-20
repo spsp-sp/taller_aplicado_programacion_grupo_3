@@ -12,6 +12,7 @@ import MapPage from '@pages/MapPage'
 import FeriasPage from '@pages/FeriasPage'
 import FeriaDetailPage from '@pages/FeriaDetailPage'
 import FeriantesPage from '@pages/FeriantesPage'
+import FerianteDetailPage from '@pages/FerianteDetailPage'
 import ChatPage from '@pages/ChatPage'
 import LoginPage from '@pages/auth/LoginPage'
 import RegisterPage from '@pages/auth/RegisterPage'
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="/ferias" element={<FeriasPage />} />
             <Route path="/ferias/:id" element={<FeriaDetailPage />} />
             <Route path="/feriantes" element={<FeriantesPage />} />
+            <Route path="/feriantes/:id" element={<FerianteDetailPage />} />
 
             {/* Protected routes */}
             <Route element={<PrivateRoute />}>

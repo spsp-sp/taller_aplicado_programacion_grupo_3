@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { MapPin, Clock, Star, Phone, Info, ChevronDown } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { MapPin, Clock, Star, Phone, Info, ChevronDown, ArrowRight } from 'lucide-react'
 import { useFerias } from '../hooks/useFerias'
 
 export default function FeriasPage() {
@@ -94,12 +95,21 @@ export default function FeriasPage() {
                     </span>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => toggleExpand(f.id)}
-                                    className={`p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-transform duration-200 ${expandedId === f.id ? 'rotate-180 text-primary-600' : 'text-gray-400'}`}
-                                >
-                                    <ChevronDown size={20} />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <Link
+                                        to={`/ferias/${f.id}`}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 active:scale-95 rounded-lg shadow-sm hover:shadow transition-all duration-150"
+                                    >
+                                        <span>Ver Detalle</span>
+                                        <ArrowRight size={14} />
+                                    </Link>
+                                    <button
+                                        onClick={() => toggleExpand(f.id)}
+                                        className={`p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-transform duration-200 ${expandedId === f.id ? 'rotate-180 text-primary-600' : 'text-gray-400'}`}
+                                    >
+                                        <ChevronDown size={20} />
+                                    </button>
+                                </div>
                             </div>
 
                             {expandedId === f.id && (
@@ -139,6 +149,15 @@ export default function FeriasPage() {
                                             </div>
 
                                         </div>
+                                    </div>
+                                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+                                        <Link
+                                            to={`/ferias/${f.id}`}
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white rounded-xl font-bold shadow-sm hover:shadow-md transition-all duration-200 text-sm active:scale-[0.98]"
+                                        >
+                                            <span>Ver Feriantes y Opiniones</span>
+                                            <ArrowRight size={16} />
+                                        </Link>
                                     </div>
                                 </div>
                             )}

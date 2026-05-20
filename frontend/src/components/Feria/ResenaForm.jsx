@@ -82,7 +82,7 @@ const ResenaForm = ({ feriaId, onResenaCreated }) => {
                         <span className="text-xs font-bold text-gray-700">{bloque.titulo}</span>
                         <div className="flex gap-1">
                             {[1, 2, 3].map((nivel) => (
-                                <button key={nivel} type="button" onClick={() => setAfluenciaPorBloque(prev => ({...prev, [bloque.id]: nivel}))}>
+                                <button key={nivel} type="button" onClick={() => setAfluenciaPorBloque(prev => ({ ...prev, [bloque.id]: nivel }))}>
                                     <User size={18} fill={nivel <= afluenciaPorBloque[bloque.id] ? getSemaforoColor(nivel).fill : "none"} className={nivel <= afluenciaPorBloque[bloque.id] ? getSemaforoColor(nivel).color : "text-gray-200"} />
                                 </button>
                             ))}
@@ -109,10 +109,9 @@ const ResenaForm = ({ feriaId, onResenaCreated }) => {
                         <button
                             key={item.id}
                             type="button"
-                            onClick={() => setVariedad(v => ({...v, [item.id]: !v[item.id]}))}
-                            className={`p-2 rounded-lg border transition-all ${
-                                variedad[item.id] ? item.activeClass : 'bg-white text-gray-300 border-gray-200'
-                            }`}
+                            onClick={() => setVariedad(v => ({ ...v, [item.id]: !v[item.id] }))}
+                            className={`p-2 rounded-lg border transition-all ${variedad[item.id] ? item.activeClass : 'bg-white text-gray-300 border-gray-200'
+                                }`}
                         >
                             <item.icon size={20} />
                         </button>
@@ -135,8 +134,8 @@ const ResenaForm = ({ feriaId, onResenaCreated }) => {
                 <div>
                     <label className="text-xs font-medium text-gray-600 block mb-1">Pagos</label>
                     <div className="flex gap-2">
-                        <button type="button" onClick={() => setMetodosPago(p => ({...p, efectivo: !p.efectivo}))} className={`p-2 rounded border ${metodosPago.efectivo ? 'border-blue-500 text-blue-600' : 'text-gray-300'}`}><HandCoins size={20} /></button>
-                        <button type="button" onClick={() => setMetodosPago(p => ({...p, tarjeta: !p.tarjeta}))} className={`p-2 rounded border ${metodosPago.tarjeta ? 'border-blue-500 text-blue-600' : 'text-gray-300'}`}><CreditCard size={20} /></button>
+                        <button type="button" onClick={() => setMetodosPago(p => ({ ...p, efectivo: !p.efectivo }))} className={`p-2 rounded border ${metodosPago.efectivo ? 'border-blue-500 text-blue-600' : 'text-gray-300'}`}><HandCoins size={20} /></button>
+                        <button type="button" onClick={() => setMetodosPago(p => ({ ...p, tarjeta: !p.tarjeta }))} className={`p-2 rounded border ${metodosPago.tarjeta ? 'border-blue-500 text-blue-600' : 'text-gray-300'}`}><CreditCard size={20} /></button>
                     </div>
                 </div>
             </div>
