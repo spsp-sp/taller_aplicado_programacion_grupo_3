@@ -1,6 +1,6 @@
 import api from './api'
 
-export const reseñaService = {
+export const resenaService = {
   getByFeria: (feriaId) => api.get(`/resenas/feria/${feriaId}`),
   create: (data) => api.post('/resenas', data),
   update: (id, data) => api.put(`/resenas/${id}`, data),
