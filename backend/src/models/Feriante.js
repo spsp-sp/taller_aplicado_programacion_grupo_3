@@ -2,46 +2,45 @@ const { DataTypes } = require('sequelize')
 const { sequelize } = require('../database/connection')
 
 const Feriante = sequelize.define('Feriante', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  usuarioId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: { model: 'usuarios', key: 'id' },
-  },
-  nombre: {
-    type: DataTypes.STRING(150),
-    allowNull: false,
-  },
-  rubro: {
-    type: DataTypes.STRING(100),
-  },
-  descripcion: {
-    type: DataTypes.TEXT,
-  },
-  telefono: {
-    type: DataTypes.STRING(20),
-  },
-  comuna: {
-    type: DataTypes.STRING(100),
-  },
-  dias: {
-    type: DataTypes.STRING(255), // Ejemplo: "Lunes, Miércoles, Sábado"
-  },
-  estado: {
-    type: DataTypes.ENUM('pendiente', 'aprobado', 'rechazado'),
-    defaultValue: 'pendiente',
-  },
-  activo: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true,
-  },
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    usuarioId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'usuarios', key: 'id' },
+    },
+    comunaId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: 'comunas', key: 'id' },
+    },
+    nombre: {
+        type: DataTypes.STRING(150),
+        allowNull: false,
+    },
+    rubro: {
+        type: DataTypes.STRING(100),
+    },
+    descripcion: {
+        type: DataTypes.TEXT,
+    },
+    telefono: {
+        type: DataTypes.STRING(20),
+    },
+    estado: {
+        type: DataTypes.ENUM('pendiente', 'aprobado', 'rechazado'),
+        defaultValue: 'pendiente',
+    },
+    activo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
 }, {
-  tableName: 'feriantes',
-  timestamps: true,
+    tableName: 'feriantes',
+    timestamps: true,
 })
 
 module.exports = Feriante

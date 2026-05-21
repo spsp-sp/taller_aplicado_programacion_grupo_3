@@ -1,14 +1,14 @@
-const { Feriante, Usuario, Feria } = require('../models')
+const { Feriante, Usuario, Feria, Comuna, Ubicacion } = require('../models')
 const { Op } = require('sequelize')
 
 // GET /api/feriantes
 // Listar feriantes con filtros opcionales (comuna, rubro)
 const getAll = async (req, res, next) => {
     try {
-        const { comuna, rubro, estado = 'aprobado' } = req.query
+        const { comunaId, rubro, estado = 'aprobado' } = req.query
         const where = { activo: true }
 
-        if (comuna) where.comuna = { [Op.iLike]: `%${comuna}%` }
+        if (comunaId) where.comunaId = comunaId
         if (rubro) where.rubro = { [Op.iLike]: `%${rubro}%` }
         if (estado) where.estado = estado
 
@@ -16,7 +16,13 @@ const getAll = async (req, res, next) => {
             where,
             include: [
                 { model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'email'] },
-                { model: Feria, as: 'ferias', through: { attributes: [] } }
+                { model: Comuna, as: 'comuna'},
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    through: {attributes: []},
+                    include: [{model: Feria, as: 'feria'}]
+                }
             ],
             order: [['nombre', 'ASC']],
         })
@@ -32,7 +38,13 @@ const getById = async (req, res, next) => {
         const feriante = await Feriante.findByPk(req.params.id, {
             include: [
                 { model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'email'] },
-                { model: Feria, as: 'ferias', through: { attributes: [] } }
+                { model: Comuna, as: 'comuna'},
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    through: {attributes: []},
+                    include: [{model: Feria, as: 'feria'}]
+                }
             ],
         })
         if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
@@ -48,6 +60,7 @@ const create = async (req, res, next) => {
         // El usuarioId vendría del token de autenticación en la ruta
         const feriante = await Feriante.create({
             ...req.body,
+            usuarioId: req.user.id,
             estado: 'pendiente' // Siempre empieza como pendiente
         })
         res.status(201).json(feriante)

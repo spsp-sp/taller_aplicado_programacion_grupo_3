@@ -2,6 +2,8 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { MapPin, ShoppingCart, MessageSquare, LogOut, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import useAuthStore from '@store/authStore'
+import logoImg from '../../assets/image/logo.png'
+import logoText from '../../assets/image/logoTexto.png'
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -23,9 +25,9 @@ export default function Navbar() {
     <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl text-primary-700">
-          <MapPin className="text-secondary-500" size={22} />
-          ConYapa
+        <Link to="/" className="flex items-center">
+            <img src={logoImg} alt="ConYapa Logo" className="h-12 w-auto" />
+            <img src={logoText} alt="ConYapa" className="h-9 w-auto hidden sm:block mt-4" />
         </Link>
 
         {/* Desktop nav */}
