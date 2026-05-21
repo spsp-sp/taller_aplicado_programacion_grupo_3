@@ -28,7 +28,6 @@ export default function FeriantesPage() {
     setExpandedId(expandedId === id ? null : id)
   }
 
-  // Datos de ejemplo para comunas, se puede reemplazar por una API de comunas o por base de datos
   const COMUNAS = [
     'Cerrillos', 'Cerro Navia', 'Conchalí', 'El Bosque', 'Estación Central', 'Huechuraba',
     'Independencia', 'La Cisterna', 'La Florida', 'La Granja', 'La Pintana', 'La Reina',
@@ -87,7 +86,7 @@ export default function FeriantesPage() {
         ) : feriantes.length > 0 ? (
           feriantes.map((f) => (
             <div key={f.id} className={`card overflow-hidden transition-all duration-300 ${expandedId === f.id ? 'ring-2 ring-primary-500 border-transparent shadow-md' : ''}`}>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center p-6">
                 <div>
                   <h3 className="text-xl font-bold text-gray-800">{f.nombre}</h3>
                   <div className="flex items-center gap-2 mt-1">
@@ -110,7 +109,7 @@ export default function FeriantesPage() {
                   </Link>
                   <button
                     onClick={() => toggleExpand(f.id)}
-                    className={`btn-outline border-none bg-gray-50 hover:bg-gray-100 ${expandedId === f.id ? 'rotate-180' : ''}`}
+                    className={`btn-outline border-none bg-gray-50 hover:bg-gray-100 transition-transform duration-200 ${expandedId === f.id ? 'rotate-180' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -119,11 +118,14 @@ export default function FeriantesPage() {
                 </div>
               </div>
 
+              {/* Contenido Expandible */}
               {expandedId === f.id && (
-                <div className="mt-6 pt-6 border-t border-gray-100 animate-fadeIn">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="px-6 pb-6 pt-0 border-t border-gray-100 animate-fadeIn">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
-                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Información de Ferias</h4>
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                        Información de Ferias (Direcciones)
+                      </h4>
                       {f.ubicaciones && f.ubicaciones.length > 0 ? (
                         <ul className="space-y-3">
                           {f.ubicaciones.map(ubi => (
@@ -133,43 +135,64 @@ export default function FeriantesPage() {
                                 {ubi.callePrincipal}
                                 {ubi.calleInicio && ` (e/ ${ubi.calleInicio} y ${ubi.calleTermino})`}
                               </span>
-                          {f.ferias.map(feria => (
-                            <li key={feria.id}>
-                              <Link
-                                to={`/ferias/${feria.id}`}
-                                className="block p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 transition-all duration-200 group text-sm"
-                              >
-                                <span className="font-bold text-gray-700 group-hover:text-primary-700 block transition-colors duration-150">
-                                  {feria.nombre}
-                                </span>
-                                <span className="text-gray-500 group-hover:text-primary-600 block text-xs mt-0.5 transition-colors duration-150">
-                                  {feria.direccion}
-                                </span>
-                              </Link>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-sm text-gray-500 italic">No hay ferias asociadas.</p>
+                        <p className="text-sm text-gray-500 italic">No hay ubicaciones asociadas.</p>
                       )}
                     </div>
+
                     <div className="space-y-4">
                       <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Categoría / Rubro</h4>
-                        <p className="text-gray-700 font-medium">{f.rubro || 'General'}</p>
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                          Ferias asociadas
+                        </h4>
+                        {f.ferias && f.ferias.length > 0 ? (
+                          <ul className="space-y-2">
+                            {f.ferias.map(feria => (
+                              <li key={feria.id}>
+                                <Link
+                                  to={`/ferias/${feria.id}`}
+                                  className="block p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 transition-all duration-200 group text-sm"
+                                >
+                                  <span className="font-bold text-gray-700 group-hover:text-primary-700 block transition-colors duration-150">
+                                    {feria.nombre}
+                                  </span>
+                                  <span className="text-gray-500 group-hover:text-primary-600 block text-xs mt-0.5 transition-colors duration-150">
+                                    {feria.direccion}
+                                  </span>
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-gray-500 italic">No hay ferias asociadas.</p>
+                        )}
                       </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Contacto</h4>
-                        <p className="text-gray-700 font-medium flex items-center gap-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                          </svg>
-                          {f.telefono || 'Sin teléfono registrado'}
-                        </p>
-                      </div>
-                      <div className="flex flex-col justify-between h-full">
+
+                      <div className="grid grid-cols-1 gap-4">
                         <div>
-                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Descripción</h4>
+                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                            Categoría / Rubro
+                          </h4>
+                          <p className="text-gray-700 font-medium">{f.rubro || 'General'}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                            Contacto
+                          </h4>
+                          <p className="text-gray-700 font-medium flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                            </svg>
+                            {f.telefono || 'Sin teléfono registrado'}
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                            Descripción
+                          </h4>
                           <p className="text-sm text-gray-600 leading-relaxed">
                             {f.descripcion || 'Sin descripción disponible.'}
                           </p>
@@ -179,7 +202,7 @@ export default function FeriantesPage() {
                             to={`/feriantes/${f.id}`}
                             className="inline-flex items-center gap-1 text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors duration-150"
                           >
-                            <span>Ver Perfil Completo y Contacto &rarr;</span>
+                            <span>Ver Perfil Completo y Contacto →</span>
                           </Link>
                         </div>
                       </div>

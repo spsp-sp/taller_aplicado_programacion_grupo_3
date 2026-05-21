@@ -2,26 +2,46 @@ const { Feria, Feriante, Resena, Usuario, Ubicacion, DiaFeria, Comuna } = requir
 const { Op } = require('sequelize')
 
 // GET /api/ferias
+// GET /api/ferias
 const getAll = async (req, res, next) => {
     try {
-        const { tipo, activa = true, comunaId} = req.query
+        // 1. Extraemos también el parámetro 'dia' enviado por el Frontend
+        const { tipo, activa = true, comunaId, dia } = req.query
         const where = { activa: activa === 'true' || activa === true }
 
         if (tipo) where.tipo = tipo
         if (comunaId) where.comunaId = comunaId
 
+        // 2. Configuramos el filtro condicional para los días de la semana
+        const diaWhere = {}
+        let filtrarPorDia = false
+
+        if (dia && dia.trim() !== '') {
+            diaWhere.diaSemana = dia
+            filtrarPorDia = true // Nos avisa que el usuario seleccionó un día específico
+        }
+
         const ferias = await Feria.findAll({
             where,
             include: [
-                {model: Comuna, as: 'comuna'},
+                { model: Comuna, as: 'comuna' },
                 {
                     model: Ubicacion,
                     as: 'ubicaciones',
-                    include: [{model: DiaFeria, as: 'diasFeria'}]
+                    // Si filtramos por día, exigimos que la feria tenga al menos una ubicación ese día
+                    required: filtrarPorDia,
+                    include: [{
+                        model: DiaFeria,
+                        as: 'diasFeria',
+                        where: diaWhere,
+                        // Si filtramos por día, forzamos a Sequelize a descartar los otros días
+                        required: filtrarPorDia
+                    }]
                 }
             ],
             order: [['nombre', 'ASC']],
         })
+
         res.json(ferias)
     } catch (err) {
         next(err)
@@ -43,8 +63,7 @@ const getNearby = async (req, res, next) => {
                     as: 'ubicaciones',
                     required: true,
                     where: Feria.sequelize.literal(
-                        `(6371000 * acos(cos(radians(${lat})) * cos(radians(ubicaciones.latitud)) * 
-                        cos(radians(ubicaciones.longitud) - radians(${lng})) +
+                        `(6371000 * acos(cos(radians(${lat})) * cos(radians(ubicaciones.latitud)) * cos(radians(ubicaciones.longitud) - radians(${lng})) +
                         sin(radians(${lat})) * sin(radians(ubicaciones.latitud)))) < ${radius}`
                     ),
                     include: [{ model: DiaFeria, as: 'diasFeria' }]
@@ -64,24 +83,24 @@ const getById = async (req, res, next) => {
             include: [
                 { model: Comuna, as: 'comuna' },
                 {
-                  model: Ubicacion,
-                  as: 'ubicaciones',
-                  include: [{model: DiaFeria, as: 'diaFerias'}]
-                },
-                {
-                    model: Resena, as: 'resenas',
-                    include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre'] }],
-                },
-                {
                     model: Ubicacion,
                     as: 'ubicaciones',
-                    include: [{
-                        model: Feriante,
-                        as: 'feriantes',
-                        attributes: ['id', 'nombre', 'rubro'],
-                        through: {attributes:[]}
-                    }]
+                    // Incluimos tanto los dias de feria como los feriantes dentro de la misma ubicación
+                    include: [
+                        { model: DiaFeria, as: 'diasFeria' },
+                        {
+                            model: Feriante,
+                            as: 'feriantes',
+                            attributes: ['id', 'nombre', 'rubro'],
+                            through: { attributes: [] }
+                        }
+                    ]
                 },
+                {
+                    model: Resena,
+                    as: 'resenas',
+                    include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nombre'] }],
+                }
             ],
         })
         if (!feria) return res.status(404).json({ message: 'Feria no encontrada.' })
@@ -94,7 +113,6 @@ const getById = async (req, res, next) => {
 // POST /api/ferias
 const create = async (req, res, next) => {
     try {
-
         const feria = await Feria.create(req.body, {
             include: [
                 {

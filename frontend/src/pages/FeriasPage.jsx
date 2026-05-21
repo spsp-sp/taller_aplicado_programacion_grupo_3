@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Clock, ChevronDown, Store, Tag, Search } from 'lucide-react'
-import { useFerias } from '@hooks/useFerias'
-import api from '@services/api'
-import { MapPin, Clock, Star, Phone, Info, ChevronDown, ArrowRight } from 'lucide-react'
+import { MapPin, Clock, ChevronDown, Store, Tag, Search, ArrowRight } from 'lucide-react'
 import { useFerias } from '../hooks/useFerias'
+import api from '@services/api'
 
 export default function FeriasPage() {
-    // 1. Estados para filtros y datos
     const [filters, setFilters] = useState({ comunaId: '', dia: '', tipo: '' })
     const [activeFilters, setActiveFilters] = useState({ comunaId: '', dia: '', tipo: '' })
     const [comunas, setComunas] = useState([])
 
-    // 2. Cargar comunas dinámicamente
     useEffect(() => {
         api.get('/comunas')
             .then(res => setComunas(res.data))
             .catch(err => console.error("Error al obtener comunas:", err))
     }, [])
 
-    // 3. Obtener ferias (usamos activeFilters para que solo cambie al dar clic en Filtrar)
     const { data: ferias = [], isLoading, isError } = useFerias(activeFilters)
 
     const diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']
@@ -34,12 +29,12 @@ export default function FeriasPage() {
 
     return (
         <div className="min-h-screen bg-[#f9fafb] pb-20">
-            {/* --- CABECERA (Header) --- */}
+            {/* CABECERA */}
             <div className="bg-white pt-16 pb-10 px-4 text-center">
                 <h1 className="text-4xl font-extrabold mb-4">
-          <span className="bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">
-            Directorio de Ferias
-          </span>
+                    <span className="bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">
+                        Directorio de Ferias
+                    </span>
                 </h1>
                 <p className="max-w-2xl mx-auto text-gray-500 text-sm leading-relaxed">
                     Encuentra tus ferias favoritas y conoce dónde y cuándo se ubican para que nunca te quedes sin tus productos frescos.
@@ -47,15 +42,13 @@ export default function FeriasPage() {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 -mt-8">
-                {/* --- BARRA DE FILTROS (Card Blanca) --- */}
+                {/* BARRA DE FILTROS */}
                 <div className="bg-white rounded-2xl shadow-xl p-6 mb-10 border border-gray-100">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-
-                        {/* Filtro Comuna */}
-                        <div className="md:col-span-1">
+                        <div>
                             <label className="block text-[11px] font-bold text-gray-700 uppercase mb-2 ml-1">Seleccionar Comuna</label>
                             <select
-                                className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:ring-2 focus:ring-green-500 outline-none transition-all appearance-none cursor-pointer"
+                                className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
                                 value={filters.comunaId}
                                 onChange={(e) => setFilters({ ...filters, comunaId: e.target.value })}
                             >
@@ -64,7 +57,6 @@ export default function FeriasPage() {
                             </select>
                         </div>
 
-                        {/* Filtro Tipo */}
                         <div>
                             <label className="block text-[11px] font-bold text-gray-700 uppercase mb-2 ml-1">Tipo</label>
                             <select
@@ -77,7 +69,6 @@ export default function FeriasPage() {
                             </select>
                         </div>
 
-                        {/* Filtro Día */}
                         <div>
                             <label className="block text-[11px] font-bold text-gray-700 uppercase mb-2 ml-1">Día</label>
                             <select
@@ -90,23 +81,20 @@ export default function FeriasPage() {
                             </select>
                         </div>
 
-                        {/* Botón Filtrar */}
                         <button
                             onClick={handleApplyFilters}
-                            className="w-full bg-[#10a34d] hover:bg-[#0d8a41] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-green-100 flex items-center justify-center gap-2"
+                            className="w-full bg-[#10a34d] hover:bg-[#0d8a41] text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
                         >
                             Filtrar
                         </button>
                     </div>
                 </div>
 
-                {/* --- LISTA DE RESULTADOS --- */}
+                {/* LISTA DE RESULTADOS */}
                 <div className="space-y-6">
                     {ferias.length === 0 ? (
                         <div className="bg-white border-2 border-dashed border-gray-200 rounded-3xl py-20 px-10 text-center flex flex-col items-center justify-center">
-                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                                <Search size={30} className="text-gray-300" />
-                            </div>
+                            <Search size={30} className="text-gray-300 mb-2" />
                             <p className="text-gray-500 font-medium">No se encontraron ferias con estos criterios.</p>
                         </div>
                     ) : (
@@ -121,12 +109,14 @@ export default function FeriasPage() {
 }
 
 function FeriaCard({ feria }) {
-    const [isOpen, setIsOpen] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
 
-    const allDias = [...new Set(feria.ubicaciones?.flatMap(u => u.diasFeria?.map(d => d.diaSemana)))]
-    const shortDias = allDias.map(d => d.charAt(0).toUpperCase() + d.slice(1, 2)).join(' · ')
+    // Extraer días únicos
+    const allDias = [...new Set(feria.ubicaciones?.flatMap(u => u.diasFeria?.map(d => d.diaSemana) || []))]
+    const shortDias = allDias.length > 0 ? allDias.map(d => d.charAt(0).toUpperCase() + d.slice(1, 2)).join(' · ') : 'No definido'
+
     const firstTime = feria.ubicaciones?.[0]?.diasFeria?.[0]
-    const timeStr = firstTime ? `${firstTime.horaInicio.slice(0,5)} a ${firstTime.horaFin.slice(0,5)}` : 'Horario no definido'
+    const timeStr = firstTime ? `${firstTime.horaInicio.slice(0, 5)} a ${firstTime.horaFin.slice(0, 5)}` : 'Horario no definido'
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
@@ -140,12 +130,12 @@ function FeriaCard({ feria }) {
                 </div>
 
                 <div className="flex gap-2 mb-4">
-          <span className="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-lg text-[10px] font-bold border border-green-100">
-            <MapPin size={10} /> {feria.comuna?.nombre || 'RM'}
-          </span>
+                    <span className="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 rounded-lg text-[10px] font-bold border border-green-100">
+                        <MapPin size={10} /> {feria.comuna?.nombre || 'RM'}
+                    </span>
                     <span className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold border border-blue-100">
-            <Tag size={10} /> {feria.tipo}
-          </span>
+                        <Tag size={10} /> {feria.tipo}
+                    </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -164,109 +154,42 @@ function FeriaCard({ feria }) {
                         {feria.ubicaciones?.map((ubi) => (
                             <div key={ubi.id} className="relative pl-12">
                                 <div className="absolute left-0 top-0 w-9 h-9 bg-green-50 rounded-full flex items-center justify-center text-green-600 border border-green-100 shadow-sm">
-                                    <span className="text-[11px] font-bold">/|\</span>
+                                    <MapPin size={14} />
                                 </div>
 
                                 <div className="flex items-center gap-2 mb-1">
                                     <h4 className="font-bold text-gray-800 text-base">{ubi.callePrincipal}</h4>
-                                    <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-md text-[10px] font-bold flex items-center gap-1 border border-indigo-100">
-                    <Store size={10} /> {ubi.numPuestos} puestos
-                  </span>
+                                    {ubi.numPuestos && (
+                                        <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-md text-[10px] font-bold flex items-center gap-1 border border-indigo-100">
+                                            <Store size={10} /> {ubi.numPuestos} puestos
+                                        </span>
+                                    )}
                                 </div>
 
                                 <p className="text-sm text-gray-500 mb-4">
-                                    Entre {ubi.calleInicio} y {ubi.calleTermino}
+                                    Entre {ubi.calleInicio || 'inicio'} y {ubi.calleTermino || 'fin'}
                                 </p>
 
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2 mb-4">
                                     {ubi.diasFeria?.map((dia) => (
                                         <span key={dia.id} className="px-4 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 shadow-sm capitalize flex items-center gap-1.5">
-                      <Clock size={12} className="text-gray-400" />
-                                            {dia.diaSemana}
-                    </span>
+                                            <Clock size={12} className="text-gray-400" />
+                                            {dia.diaSemana} ({dia.horaInicio.slice(0, 5)} - {dia.horaFin.slice(0, 5)})
+                                        </span>
                                     ))}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Link
-                                        to={`/ferias/${f.id}`}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 active:scale-95 rounded-lg shadow-sm hover:shadow transition-all duration-150"
-                                    >
-                                        <span>Ver Detalle</span>
-                                        <ArrowRight size={14} />
-                                    </Link>
-                                    <button
-                                        onClick={() => toggleExpand(f.id)}
-                                        className={`p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-transform duration-200 ${expandedId === f.id ? 'rotate-180 text-primary-600' : 'text-gray-400'}`}
-                                    >
-                                        <ChevronDown size={20} />
-                                    </button>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="mt-8 flex justify-center">
+                    <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
                         <Link
                             to={`/ferias/${feria.id}`}
-                            className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-200 hover:border-green-500 hover:text-green-600 transition-all shadow-sm"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-sm transition-all text-sm"
                         >
-                            <ChevronDown size={20} className="text-gray-400" />
+                            <span>Ver Detalle Completo</span>
+                            <ArrowRight size={16} />
                         </Link>
-                            {expandedId === f.id && (
-                                <div className="mt-6 pt-6 border-t border-gray-100 animate-fadeIn">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                                <Clock size={12} /> Horarios Detallados
-                                            </h4>
-                                            {f.horarios && f.horarios.length > 0 ? (
-                                                <ul className="space-y-2">
-                                                    {f.horarios.map(h => (
-                                                        <li key={h.id} className="text-sm flex justify-between bg-gray-50 p-2 rounded">
-                                                            <span className="font-semibold text-gray-700 capitalize">{h.diaSemana}</span>
-                                                            <span className="text-gray-600">{h.horaInicio.substring(0,5)} - {h.horaFin.substring(0,5)}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <p className="text-sm text-gray-500 italic">No hay horarios registrados.</p>
-                                            )}
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                                    <Info size={12} /> Tipo de Feria
-                                                </h4>
-                                                <p className="text-gray-700 font-medium capitalize">{f.tipo}</p>
-                                            </div>
-                                            <div>
-                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                                    <Star size={12} /> Descripción
-                                                </h4>
-                                                <p className="text-sm text-gray-600 leading-relaxed">
-                                                    {f.descripcion || 'Sin descripción disponible.'}
-                                                </p>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
-                                        <Link
-                                            to={`/ferias/${f.id}`}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white rounded-xl font-bold shadow-sm hover:shadow-md transition-all duration-200 text-sm active:scale-[0.98]"
-                                        >
-                                            <span>Ver Feriantes y Opiniones</span>
-                                            <ArrowRight size={16} />
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                        <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500">No se encontraron ferias con este filtro.</p>
                     </div>
                 </div>
             )}
