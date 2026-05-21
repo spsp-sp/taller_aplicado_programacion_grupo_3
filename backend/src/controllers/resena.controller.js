@@ -1,6 +1,36 @@
-const { Resena, Usuario } = require('../models')
+const req = require("express/lib/request");
+const create = async (req, res, next) => {
+    try {
+        // Extraemos todos los campos que envía el nuevo formulario
+        const {
+            feriaId,
+            calificacion,
+            comentario,
+            precio,
+            metodosPago,
+            variedad,
+            afluenciaDetallada
+        } = req.body
 
-// GET /api/resenas/feria/:feriaId
+        const resena = await Resena.create({
+            feriaId,
+            calificacion,
+            comentario,
+            precio,
+            metodosPago,
+            variedad,
+            afluenciaDetallada,
+            usuarioId: req.user.id
+        })
+        res.status(201).json(resena)
+    } catch (err) {
+        next(err)
+    }
+}
+
+const { Resena, Usuario } = require('../models');
+
+
 const getByFeria = async (req, res, next) => {
     try {
         const resenas = await Resena.findAll({
@@ -14,17 +44,6 @@ const getByFeria = async (req, res, next) => {
     }
 }
 
-// POST /api/resenas
-const create = async (req, res, next) => {
-    try {
-        const resena = await Resena.create({ ...req.body, usuarioId: req.user.id })
-        res.status(201).json(resena)
-    } catch (err) {
-        next(err)
-    }
-}
-
-// PUT /api/resenas/:id
 const update = async (req, res, next) => {
     try {
         const resena = await Resena.findByPk(req.params.id)
@@ -37,7 +56,6 @@ const update = async (req, res, next) => {
     }
 }
 
-// DELETE /api/resenas/:id
 const remove = async (req, res, next) => {
     try {
         const resena = await Resena.findByPk(req.params.id)
@@ -51,4 +69,8 @@ const remove = async (req, res, next) => {
     }
 }
 
-module.exports = { getByFeria, create, update, remove }
+
+// Los demás métodos (getByFeria, update, remove) se mantienen igual,
+// pero ahora devolverán los nuevos campos JSON automáticamente.
+
+module.exports = { create, getByFeria, update, remove}
