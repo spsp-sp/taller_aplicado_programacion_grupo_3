@@ -1,10 +1,10 @@
-const Usuario    = require('./Usuario')
-const Comuna     = require('./Comuna')
-const Feria      = require('./Feria')
-const Ubicacion  = require('./Ubicacion')
+const Usuario = require('./Usuario')
+const Comuna = require('./Comuna')
+const Feria = require('./Feria')
+const Ubicacion = require('./Ubicacion')
 const DiaFeria = require('./DiaFeria')
-const Feriante   = require('./Feriante')
-const Resena     = require('./Resena')
+const Feriante = require('./Feriante')
+const Resena = require('./Resena')
 const ListaCompras = require('./ListaCompras')
 
 
@@ -47,6 +47,9 @@ Feriante.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' })
 
 Feria.hasMany(Resena, { foreignKey: 'feriaId', as: 'resenas' })
 Resena.belongsTo(Feria, { foreignKey: 'feriaId', as: 'feria' })
+
+Ubicacion.hasMany(Resena, { foreignKey: 'ubicacionId', as: 'resenas' })
+Resena.belongsTo(Ubicacion, { foreignKey: 'ubicacionId', as: 'ubicacion' })
 
 Usuario.hasMany(Resena, { foreignKey: 'usuarioId', as: 'resenas' })
 Resena.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' })

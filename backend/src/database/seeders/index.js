@@ -13,15 +13,52 @@ const seed = async () => {
     try {
 
         // Sincronizar modelos (esto creará las tablas si no existen)
-        //await sequelize.sync({ force: true })
+        await sequelize.sync({ force: true })
 
         //Compara tablas y aplica cambios
-        await sequelize.sync({ alter: true })
+        //await sequelize.sync({ alter: true })
         console.log('--- Iniciando Seeding ---')
 
         const hashedPassword = await bcrypt.hash('123456', 10)
+        // Generamos la contraseña encriptada específica para el administrador
+        const adminHashedPassword = await bcrypt.hash('admin123', 10)
 
-        // 1. Comunas
+        // 1. Usuarios Base (Incluye al Administrador solicitado)
+        const [uAdmin] = await Usuario.findOrCreate({
+            where: { email: 'admin@feria.com' }, // Usamos un formato de correo válido por buenas prácticas
+            defaults: {
+                nombre: 'admin',
+                password: adminHashedPassword,
+                rol: 'admin', // Le otorgamos explícitamente el rol de administrador
+            }
+        })
+
+        const [uFeriante1] = await Usuario.findOrCreate({
+            where: { email: 'juan@feria.com' },
+            defaults: {
+                nombre: 'Juan Pérez',
+                password: hashedPassword,
+                rol: 'feriante',
+            }
+        })
+        const [uFeriante2] = await Usuario.findOrCreate({
+            where: { email: 'maria@feria.com' },
+            defaults: {
+                nombre: 'María López',
+                password: hashedPassword,
+                rol: 'feriante',
+            }
+        })
+        const [uFeriante3] = await Usuario.findOrCreate({
+            where: { email: 'carlos@feria.com' },
+            defaults: {
+                nombre: 'Carlos Soto',
+                password: hashedPassword,
+                rol: 'feriante',
+            }
+        })
+
+        // 2. Comunas
         const [puenAlto] = await Comuna.findOrCreate({
             where: { nombre: 'Puente Alto' },
         })
@@ -32,7 +69,7 @@ const seed = async () => {
             where: { nombre: 'La Florida' },
         })
 
-        // 2. Ferias
+        // 3. Ferias
         const [licanray] = await Feria.findOrCreate({
             where: { nombre: 'Licanray', comunaId: puenAlto.id },
             defaults: {
@@ -41,160 +78,103 @@ const seed = async () => {
                 activa: true,
             },
         })
-        const [borognio] = await Feria.findOrCreate({
-            where: { nombre: 'Borgoño', comunaId: maipu.id },
+        const [losCopihues] = await Feria.findOrCreate({
+            where: { nombre: 'Los Copihues', comunaId: laFlorida.id },
             defaults: {
-                descripcion: 'Feria libre sector Maipú.',
-                tipo: 'libre',
+                descripcion: 'Feria municipal organizada en La Florida.',
+                tipo: 'municipal',
                 activa: true,
             },
         })
-        const [copihues] = await Feria.findOrCreate({
-            where: { nombre: 'Los Copihues', comunaId: laFlorida.id },
+        const [tresPoniente] = await Feria.findOrCreate({
+            where: { nombre: 'Tres Poniente', comunaId: maipu.id },
             defaults: {
-                descripcion: 'Feria libre sector La Florida.',
+                descripcion: 'Feria gigante con una gran variedad de productos en Maipú.',
                 tipo: 'libre',
                 activa: true,
             },
         })
 
-        // 3. Ubicaciones
+        // 4. Ubicaciones
         const [ubi1] = await Ubicacion.findOrCreate({
             where: { feriaId: licanray.id, callePrincipal: 'Av. El Peral' },
             defaults: {
-                calleInicio: 'México',
-                calleTermino: 'Av. Las Nieves Oriente',
+                calleInicio: 'Av. Concha y Toro',
+                calleTermino: 'Las Perdices',
                 latitud: -33.5722508,
                 longitud: -70.5634535,
-                numPuestos: 205,
-            },
-        })
-        const [ubi2] = await Ubicacion.findOrCreate({
-            where: { feriaId: licanray.id, callePrincipal: 'Av. México' },
-            defaults: {
-                calleInicio: 'Los Toros',
-                calleTermino: 'Bahía Inglesa',
-                latitud: -33.5650055,
-                longitud: -70.5673402,
-                numPuestos: 210,
-            },
-        })
-        const [ubi3] = await Ubicacion.findOrCreate({
-            where: { feriaId: licanray.id, callePrincipal: 'Troncal San Francisco' },
-            defaults: {
-                calleInicio: 'Valle Central',
-                calleTermino: 'Nonato Coo',
-                latitud: -33.5801095,
-                longitud: -70.5711200,
-                numPuestos: 230,
-            },
-        })
-        const [ubi4] = await Ubicacion.findOrCreate({
-            where: { feriaId: licanray.id, callePrincipal: 'Las Nieves' },
-            defaults: {
-                calleInicio: 'El Peñón',
-                calleTermino: '65 mts al sur de Luis Matte',
-                latitud: -33.5823473,
-                longitud: -70.5581280,
-                numPuestos: 216,
-            },
-        })
-        const [ubi5] = await Ubicacion.findOrCreate({
-            where: { feriaId: licanray.id, callePrincipal: 'Punta Blanca' },
-            defaults: {
-                calleInicio: 'Buin',
-                calleTermino: 'El Barquito',
-                latitud: -33.5833265,
-                longitud: -70.5538630,
-                numPuestos: 92,
-            },
-        })
-        const [ubi6] = await Ubicacion.findOrCreate({
-            where: { feriaId: borognio.id, callePrincipal: 'J.M. Borgoño' },
-            defaults: {
-                calleInicio: 'Las Naciones',
-                calleTermino: '4 Poniente',
-                latitud: -33.5100000,
-                longitud: -70.7500000,
                 numPuestos: 120,
             },
         })
-        const [ubi7] = await Ubicacion.findOrCreate({
-            where: { feriaId: copihues.id, callePrincipal: 'Av. Departamental' },
+        const [ubi2] = await Ubicacion.findOrCreate({
+            where: { feriaId: licanray.id, callePrincipal: 'San Hugo' },
             defaults: {
-                calleInicio: 'Volcán Llaima',
-                calleTermino: 'Los Cerezos',
-                latitud: -33.5200000,
-                longitud: -70.5800000,
-                numPuestos: 180,
+                calleInicio: 'Av. Gabriela',
+                calleTermino: 'Ejército Libertador',
+                latitud: -33.585400,
+                longitud: -70.601200,
+                numPuestos: 80,
+            },
+        })
+        const [ubi7] = await Ubicacion.findOrCreate({
+            where: { feriaId: losCopihues.id, callePrincipal: 'Av. Departamental' },
+            defaults: {
+                calleInicio: 'Av. La Florida',
+                calleTermino: 'Vicuña Mackenna',
+                latitud: -33.515200,
+                longitud: -70.589400,
+                numPuestos: 150,
+            },
+        })
+        const [ubi8] = await Ubicacion.findOrCreate({
+            where: { feriaId: tresPoniente.id, callePrincipal: 'Av. Tres Poniente' },
+            defaults: {
+                calleInicio: 'Camino a Melipilla',
+                calleTermino: 'Silva Carvallo',
+                latitud: -33.534600,
+                longitud: -70.785300,
+                numPuestos: 200,
             },
         })
 
-        // 4. Dias Feria
+        // 5. Días de Feria
         await DiaFeria.findOrCreate({
             where: { ubicacionId: ubi1.id, diaSemana: 'martes' },
-            defaults: { horaInicio: '08:00', horaFin: '15:00' },
+            defaults: { horaInicio: '08:00:00', horaFin: '16:00:00' },
         })
         await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi2.id, diaSemana: 'jueves' },
-            defaults: { horaInicio: '08:00', horaFin: '15:00' },
-        })
-        // Troncal San Francisco: miércoles Y sábado en la misma ubicación
-        await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi3.id, diaSemana: 'miercoles' },
-            defaults: { horaInicio: '08:00', horaFin: '15:00' },
+            where: { ubicacionId: ubi1.id, diaSemana: 'sabado' },
+            defaults: { horaInicio: '08:00:00', horaFin: '16:00:00' },
         })
         await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi3.id, diaSemana: 'sabado' },
-            defaults: { horaInicio: '08:00', horaFin: '15:00' },
-        })
-        await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi4.id, diaSemana: 'domingo' },
-            defaults: { horaInicio: '08:00', horaFin: '15:00' },
-        })
-        await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi5.id, diaSemana: 'viernes' },
-            defaults: { horaInicio: '08:00', horaFin: '15:00' },
-        })
-        await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi6.id, diaSemana: 'martes' },
-            defaults: { horaInicio: '08:00', horaFin: '14:00' },
-        })
-        await DiaFeria.findOrCreate({
-            where: { ubicacionId: ubi6.id, diaSemana: 'viernes' },
-            defaults: { horaInicio: '08:00', horaFin: '14:00' },
+            where: { ubicacionId: ubi2.id, diaSemana: 'miercoles' },
+            defaults: { horaInicio: '08:00:00', horaFin: '16:00:00' },
         })
         await DiaFeria.findOrCreate({
             where: { ubicacionId: ubi7.id, diaSemana: 'jueves' },
-            defaults: { horaInicio: '07:00', horaFin: '15:00' },
+            defaults: { horaInicio: '08:00:00', horaFin: '16:00:00' },
         })
         await DiaFeria.findOrCreate({
             where: { ubicacionId: ubi7.id, diaSemana: 'domingo' },
-            defaults: { horaInicio: '07:00', horaFin: '15:00' },
+            defaults: { horaInicio: '08:00:00', horaFin: '16:00:00' },
+        })
+        await DiaFeria.findOrCreate({
+            where: { ubicacionId: ubi8.id, diaSemana: 'viernes' },
+            defaults: { horaInicio: '07:30:00', horaFin: '15:30:00' },
+        })
+        await DiaFeria.findOrCreate({
+            where: { ubicacionId: ubi8.id, diaSemana: 'domingo' },
+            defaults: { horaInicio: '07:30:00', horaFin: '15:30:00' },
         })
 
-        // 5. Usuarios feriantes
-        const [uFeriante1] = await Usuario.findOrCreate({
-            where: { email: 'juan@feriante.com' },
-            defaults: { nombre: 'Juan Pérez', password: hashedPassword, rol: 'feriante' },
-        })
-        const [uFeriante2] = await Usuario.findOrCreate({
-            where: { email: 'maria@feriante.com' },
-            defaults: { nombre: 'María González', password: hashedPassword, rol: 'feriante' },
-        })
-        const [uFeriante3] = await Usuario.findOrCreate({
-            where: { email: 'carlos@feriante.com' },
-            defaults: { nombre: 'Carlos Soto', password: hashedPassword, rol: 'feriante' },
-        })
-
-        // 6. Perfiles feriante
+        // 6. Feriantes
         const [f1] = await Feriante.findOrCreate({
             where: { usuarioId: uFeriante1.id },
             defaults: {
                 comunaId: puenAlto.id,
-                nombre: 'Frutas Juanito',
+                nombre: 'Frutería El Juanito',
                 rubro: 'Frutas y Verduras',
-                descripcion: 'Las mejores manzanas y naranjas de la zona.',
+                descripcion: 'Las mejores frutas de la zona.',
                 telefono: '+56912345678',
                 estado: 'aprobado',
             },
@@ -225,13 +205,13 @@ const seed = async () => {
         // 7. Asociar feriantes a su ubicación específica
         await f1.addUbicaciones([ubi1])  // Juan → Av. El Peral (Licanray)
         await f2.addUbicaciones([ubi7])  // María → Av. Departamental (Los Copihues)
-        await f3.addUbicaciones([ubi6])  // Carlos → J.M. Borgoño (Borgoño)
+        await f3.addUbicaciones([ubi8])  // Carlos → Av. Tres Poniente (Tres Poniente)
 
         console.log('--- Seeding completado con éxito ---')
-        process.exit(0)
     } catch (error) {
         console.error('Error durante el seeding:', error)
-        process.exit(1)
+    } finally {
+        await sequelize.close()
     }
 }
 

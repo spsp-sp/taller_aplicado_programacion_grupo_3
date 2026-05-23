@@ -20,9 +20,15 @@ const rejectFeriante = async (id) => {
   return data
 }
 
+const createPerfil = async (perfilData) => {
+  const { data } = await api.post('/feriantes', perfilData)
+  return data
+}
+
 export default {
   getFeriantes,
   getFerianteById,
+  createPerfil,
   approveFeriante,
   rejectFeriante,
 }

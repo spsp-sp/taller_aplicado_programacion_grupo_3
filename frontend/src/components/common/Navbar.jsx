@@ -46,6 +46,18 @@ export default function Navbar() {
               {label}
             </NavLink>
           ))}
+          {user?.rol === 'admin' && (
+            <NavLink
+              to="/admin/solicitudes"
+              className={({ isActive }) =>
+                `flex items-center gap-1 text-sm font-medium transition-colors ${
+                  isActive ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
+                }`
+              }
+            >
+              Solicitudes
+            </NavLink>
+          )}
         </div>
 
         {/* Actions */}
@@ -97,6 +109,17 @@ export default function Navbar() {
               {label}
             </NavLink>
           ))}
+          {user?.rol === 'admin' && (
+            <NavLink
+              to="/admin/solicitudes"
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) =>
+                `text-sm font-medium py-1 ${isActive ? 'text-primary-600' : 'text-gray-600'}`
+              }
+            >
+              Solicitudes
+            </NavLink>
+          )}
           <div className="flex gap-2 pt-2 border-t border-gray-100">
             {user ? (
               <button onClick={handleLogout} className="btn-outline text-sm py-1.5 w-full">Cerrar sesión</button>

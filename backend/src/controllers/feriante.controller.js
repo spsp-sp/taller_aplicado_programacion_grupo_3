@@ -57,12 +57,20 @@ const getById = async (req, res, next) => {
 // POST /api/feriantes
 const create = async (req, res, next) => {
     try {
-        // El usuarioId vendría del token de autenticación en la ruta
+        const { ubicacionId, ubicacionesIds, feriaId, ...ferianteData } = req.body
         const feriante = await Feriante.create({
-            ...req.body,
+            ...ferianteData,
             usuarioId: req.user.id,
             estado: 'pendiente' // Siempre empieza como pendiente
         })
+        
+        // Asociar ubicaciones si vienen en el request
+        if (ubicacionesIds && Array.isArray(ubicacionesIds) && ubicacionesIds.length > 0) {
+            await feriante.addUbicaciones(ubicacionesIds)
+        } else if (ubicacionId) {
+            await feriante.addUbicaciones([ubicacionId])
+        }
+        
         res.status(201).json(feriante)
     } catch (err) {
         next(err)

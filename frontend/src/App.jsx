@@ -19,6 +19,8 @@ import RegisterPage from '@pages/auth/RegisterPage'
 import ProfilePage from '@pages/ProfilePage'
 import ListaComprasPage from '@pages/ListaComprasPage'
 import DashboardPage from '@pages/admin/DashboardPage'
+import SolicitudesFeriantesPage from '@pages/admin/SolicitudesFeriantesPage'
+import RegistroFeriantePage from '@pages/auth/RegistroFeriantePage'
 import NotFoundPage from '@pages/NotFoundPage'
 
 // Guards
@@ -54,11 +56,13 @@ export default function App() {
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/perfil" element={<ProfilePage />} />
               <Route path="/lista-compras" element={<ListaComprasPage />} />
+              <Route path="/registro-feriante" element={<RegistroFeriantePage />} />
             </Route>
 
             {/* Admin routes */}
             <Route element={<RoleRoute allowedRoles={['admin']} />}>
               <Route path="/admin" element={<DashboardPage />} />
+              <Route path="/admin/solicitudes" element={<SolicitudesFeriantesPage />} />
             </Route>
           </Route>
 
