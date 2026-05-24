@@ -16,12 +16,12 @@ const getAll = async (req, res, next) => {
             where,
             include: [
                 { model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'email'] },
-                { model: Comuna, as: 'comuna'},
+                { model: Comuna, as: 'comuna' },
                 {
                     model: Ubicacion,
                     as: 'ubicaciones',
-                    through: {attributes: []},
-                    include: [{model: Feria, as: 'feria'}]
+                    through: { attributes: [] },
+                    include: [{ model: Feria, as: 'feria', include: [{ model: Comuna, as: 'comuna' }] }]
                 }
             ],
             order: [['nombre', 'ASC']],
@@ -38,12 +38,12 @@ const getById = async (req, res, next) => {
         const feriante = await Feriante.findByPk(req.params.id, {
             include: [
                 { model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'email'] },
-                { model: Comuna, as: 'comuna'},
+                { model: Comuna, as: 'comuna' },
                 {
                     model: Ubicacion,
                     as: 'ubicaciones',
-                    through: {attributes: []},
-                    include: [{model: Feria, as: 'feria'}]
+                    through: { attributes: [] },
+                    include: [{ model: Feria, as: 'feria', include: [{ model: Comuna, as: 'comuna' }] }]
                 }
             ],
         })
@@ -63,14 +63,14 @@ const create = async (req, res, next) => {
             usuarioId: req.user.id,
             estado: 'pendiente' // Siempre empieza como pendiente
         })
-        
+
         // Asociar ubicaciones si vienen en el request
         if (ubicacionesIds && Array.isArray(ubicacionesIds) && ubicacionesIds.length > 0) {
             await feriante.addUbicaciones(ubicacionesIds)
         } else if (ubicacionId) {
             await feriante.addUbicaciones([ubicacionId])
         }
-        
+
         res.status(201).json(feriante)
     } catch (err) {
         next(err)

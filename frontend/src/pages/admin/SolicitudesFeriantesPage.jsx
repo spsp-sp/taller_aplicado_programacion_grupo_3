@@ -76,11 +76,10 @@ export default function SolicitudesFeriantesPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              activeTab === tab.key
-                ? 'bg-white text-gray-800 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.key
+              ? 'bg-white text-gray-800 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+              }`}
           >
             {tab.label}
           </button>
@@ -118,10 +117,9 @@ export default function SolicitudesFeriantesPage() {
             >
               <div className="flex flex-col lg:flex-row">
                 {/* Barra lateral de color */}
-                <div className={`w-full lg:w-1.5 h-1.5 lg:h-auto flex-shrink-0 ${
-                  f.estado === 'pendiente' ? 'bg-amber-400' :
+                <div className={`w-full lg:w-1.5 h-1.5 lg:h-auto flex-shrink-0 ${f.estado === 'pendiente' ? 'bg-amber-400' :
                   f.estado === 'aprobado' ? 'bg-green-400' : 'bg-red-400'
-                }`} />
+                  }`} />
 
                 {/* Contenido */}
                 <div className="flex-1 p-6">
@@ -137,40 +135,83 @@ export default function SolicitudesFeriantesPage() {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-gray-400">👤</span>
-                          <span className="font-medium">Solicitante:</span>
-                          {f.usuario?.nombre || 'N/A'}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-gray-400">✉️</span>
-                          <span className="font-medium">Email:</span>
-                          {f.usuario?.email || 'N/A'}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-gray-400">🏷️</span>
-                          <span className="font-medium">Rubro:</span>
-                          {f.rubro || 'Sin especificar'}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-gray-400">📍</span>
-                          <span className="font-medium">Comuna:</span>
-                          {f.comuna?.nombre || 'Sin especificar'}
-                        </div>
-                        {f.telefono && (
+                      <div className="space-y-3 bg-gray-50 rounded-xl p-4 border border-gray-100 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                           <div className="flex items-center gap-2 text-gray-600">
-                            <span className="text-gray-400">📞</span>
-                            <span className="font-medium">Teléfono:</span>
-                            {f.telefono}
+                            <span className="text-gray-400">👤</span>
+                            <span className="font-medium">Solicitante:</span>
+                            {f.usuario?.nombre || 'N/A'}
                           </div>
-                        )}
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-gray-400">📅</span>
-                          <span className="font-medium">Fecha:</span>
-                          {new Date(f.createdAt).toLocaleDateString('es-CL', {
-                            day: 'numeric', month: 'short', year: 'numeric'
-                          })}
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-gray-400">✉️</span>
+                            <span className="font-medium">Email:</span>
+                            {f.usuario?.email || 'N/A'}
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-gray-400">🏷️</span>
+                            <span className="font-medium">Rubro:</span>
+                            {f.rubro || 'Sin especificar'}
+                          </div>
+                          {/* 1. Comunas de las ubicaciones seleccionadas */}
+                          <div className="text-gray-600">
+                            <span className="font-semibold text-gray-700 block text-xs uppercase tracking-wider mb-1">📍 Comunas asociadas:</span>
+                            {f.ubicaciones && f.ubicaciones.length > 0 ? (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {[...new Set(f.ubicaciones.map(u => u.feria?.comuna?.nombre).filter(Boolean))].map((comunaNombre, idx) => (
+                                  <span key={idx} className="bg-white border border-gray-200 px-2 py-0.5 rounded-md text-xs font-medium text-gray-800">
+                                    {comunaNombre}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic text-xs">Ninguna ubicación seleccionada</span>
+                            )}
+                          </div>
+                          {/* 2. Ferias solicitadas */}
+                          <div className="text-gray-600">
+                            <span className="font-semibold text-gray-700 block text-xs uppercase tracking-wider mb-1">🏪 Ferias:</span>
+                            {f.ubicaciones && f.ubicaciones.length > 0 ? (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {[...new Set(f.ubicaciones.map(u => u.feria?.nombre).filter(Boolean))].map((feriaNombre, idx) => (
+                                  <span key={idx} className="bg-primary-50 border border-primary-100 text-primary-800 px-2 py-0.5 rounded-md text-xs font-semibold">
+                                    {feriaNombre}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic text-xs">Sin ferias asociadas</span>
+                            )}
+                          </div>
+                          {/* 3. Calles / Ubicaciones exactas */}
+                          <div className="text-gray-600">
+                            <span className="font-semibold text-gray-700 block text-xs uppercase tracking-wider mb-1"> 📍 Ubicaciones (Calles):</span>
+                            {f.ubicaciones && f.ubicaciones.length > 0 ? (
+                              <ul className="list-disc list-inside space-y-0.5 text-xs text-gray-600 mt-1 pl-1">
+                                {f.ubicaciones.map((u) => (
+                                  <li key={u.id} className="truncate">
+                                    <strong className="text-gray-700">{u.callePrincipal}</strong>
+                                    {u.calleInicio && ` (entre ${u.calleInicio} y ${u.calleTermino})`}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-gray-400 italic text-xs">Sin calles registradas</span>
+                            )}
+                          </div>
+                          {f.telefono && (
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <span className="text-gray-400">📞</span>
+                              <span className="font-medium">Teléfono:</span>
+                              {f.telefono}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-gray-400">📅</span>
+                            <span className="font-medium">Fecha:</span>
+                            {new Date(f.createdAt).toLocaleDateString('es-CL', {
+                              day: 'numeric', month: 'short', year: 'numeric'
+                            })}
+                          </div>
                         </div>
                       </div>
 
@@ -244,11 +285,10 @@ export default function SolicitudesFeriantesPage() {
                 <button
                   onClick={handleConfirm}
                   disabled={isPending}
-                  className={`flex-1 px-4 py-2 rounded-lg text-white font-medium transition-all active:scale-95 disabled:opacity-50 ${
-                    confirmAction.action === 'aprobar'
-                      ? 'bg-green-500 hover:bg-green-600'
-                      : 'bg-red-500 hover:bg-red-600'
-                  }`}
+                  className={`flex-1 px-4 py-2 rounded-lg text-white font-medium transition-all active:scale-95 disabled:opacity-50 ${confirmAction.action === 'aprobar'
+                    ? 'bg-green-500 hover:bg-green-600'
+                    : 'bg-red-500 hover:bg-red-600'
+                    }`}
                 >
                   {isPending ? 'Procesando...' : confirmAction.action === 'aprobar' ? 'Sí, aprobar' : 'Sí, rechazar'}
                 </button>

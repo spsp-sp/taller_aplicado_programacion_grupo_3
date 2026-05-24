@@ -5,12 +5,14 @@ import toast from 'react-hot-toast'
 import ferianteService from '@services/ferianteService'
 import { feriaService } from '@services/feriaService'
 import useAuthStore from '@store/authStore'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function RegistroFeriantePage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const [ferias, setFerias] = useState([])
   const [loadingFerias, setLoadingFerias] = useState(true)
+  const queryClient = useQueryClient() // Recuérdalo importar de '@tanstack/react-query'
 
   const [form, setForm] = useState({
     nombre: '',
@@ -34,15 +36,18 @@ export default function RegistroFeriantePage() {
     const validUbiIds = ferias
       .filter((f) => selectedFerias.includes(f.id))
       .flatMap((f) => f.ubicaciones?.map((u) => u.id) || [])
-    
+
     setSelectedUbicaciones((prev) => prev.filter((id) => validUbiIds.includes(id)))
   }, [selectedFerias, ferias])
 
   const { mutate: crearPerfil, isPending } = useMutation({
     mutationFn: ferianteService.createPerfil,
     onSuccess: () => {
-      toast.success('¡Solicitud enviada! Un administrador revisará tu perfil.', { duration: 5000 })
-      navigate('/')
+      toast.success('¡Solicitud enviada! Un administrador revisará tu perfil.', { duration: 2000 })
+      // Invalida la lista de feriantes del admin para que se descargue de nuevo
+      queryClient.invalidateQueries({ queryKey: ['feriantes-admin'] })
+
+      navigate('/perfil')
     },
     onError: (err) =>
       toast.error(err.response?.data?.message || 'Error al crear perfil de feriante'),
@@ -54,7 +59,7 @@ export default function RegistroFeriantePage() {
   }
 
   const toggleFeria = (id) => {
-    setSelectedFerias((prev) => 
+    setSelectedFerias((prev) =>
       prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
     )
   }
@@ -138,7 +143,7 @@ export default function RegistroFeriantePage() {
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="p-8 flex flex-col gap-6">
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Nombre del puesto */}
             <div>
@@ -220,15 +225,15 @@ export default function RegistroFeriantePage() {
               ¿En qué ferias trabajas? <span className="text-red-500">*</span>
               <p className="text-xs font-normal text-gray-500 mt-0.5">Puedes seleccionar más de una.</p>
             </label>
-            
+
             {loadingFerias ? (
               <p className="text-sm text-gray-500">Cargando ferias...</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-lg bg-gray-50">
                 {ferias.map((f) => (
                   <label key={f.id} className="flex items-start gap-3 p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary-300 hover:bg-primary-50 transition-colors">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="mt-1 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
                       checked={selectedFerias.includes(f.id)}
                       onChange={() => toggleFeria(f.id)}
@@ -260,11 +265,10 @@ export default function RegistroFeriantePage() {
                     <div className="p-4 grid grid-cols-1 gap-3">
                       {feria.ubicaciones?.length > 0 ? (
                         feria.ubicaciones.map(u => (
-                          <label key={u.id} className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                            selectedUbicaciones.includes(u.id) ? 'bg-primary-50 border-primary-300' : 'bg-white border-gray-200 hover:border-primary-200'
-                          }`}>
-                            <input 
-                              type="checkbox" 
+                          <label key={u.id} className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedUbicaciones.includes(u.id) ? 'bg-primary-50 border-primary-300' : 'bg-white border-gray-200 hover:border-primary-200'
+                            }`}>
+                            <input
+                              type="checkbox"
                               className="mt-1 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
                               checked={selectedUbicaciones.includes(u.id)}
                               onChange={() => toggleUbicacion(u.id)}
