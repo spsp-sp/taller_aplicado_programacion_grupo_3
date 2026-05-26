@@ -1,13 +1,18 @@
-import { useParams, Link } from 'react-router-dom'
-import {MapPin, Clock, Star, Store, MessageSquare, Apple} from 'lucide-react'
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
+import {MapPin, Clock, Star, Store, MessageSquare, ArrowLeft} from 'lucide-react'
 import { useFeria } from '@hooks/useFerias'
 import ResenaForm from '@components/Feria/ResenaForm'
 import useAuthStore from '../store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
+import CarouselRecorrido from "@components/Feria/RecorridoVirtual";
 
 
 export default function FeriaDetailPage() {
     const { id } = useParams()
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const ubicacionId = searchParams.get('ubi')
+
     const { data: feria, isLoading, isError } = useFeria(id)
     const { user } = useAuthStore()
     const queryClient = useQueryClient()
@@ -33,6 +38,23 @@ export default function FeriaDetailPage() {
         </div>
     )
 
+    // Filtrar la ubicación seleccionada
+    const ubicacionSeleccionada = ubicacionId
+        ? feria.ubicaciones?.find(u => u.id === parseInt(ubicacionId))
+        : feria.ubicaciones?.[0]
+
+    if (!ubicacionSeleccionada) {
+        return (
+            <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+                <h2 className="text-2xl font-bold text-red-600 mb-2">Ubicación no encontrada</h2>
+                <p className="text-gray-600 mb-6">No pudimos encontrar la ubicación que buscas.</p>
+                <Link to="/ferias" className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    Volver al listado
+                </Link>
+            </div>
+        )
+    }
+
     // Calcular promedio de calificación
     const promedio = feria.resenas?.length > 0
         ? (feria.resenas.reduce((acc, r) => acc + r.calificacion, 0) / feria.resenas.length).toFixed(1)
@@ -40,57 +62,74 @@ export default function FeriaDetailPage() {
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
-            {/* Cabecera de la Feria */}
-            <div className="bg-white shadow-sm rounded-xl border p-6 mb-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-3xl font-extrabold text-gray-900">{feria.nombre}</h1>
-                            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wider">
-                {feria.tipo}
-              </span>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-gray-600 flex items-center gap-2">
-                                <MapPin size={18} className="text-green-500" /> {feria.direccion}
-                            </p>
-                            <div className="text-gray-600 flex items-start gap-2">
-                                <Clock size={18} className="text-green-500 mt-1" />
-                                <div>
-                                    <p className="font-medium">Horarios de atención:</p>
-                                    {feria.horarios?.length > 0 ? (
-                                        <ul className="text-sm mt-1">
-                                            {feria.horarios.map(h => (
-                                                <li key={h.id} className="capitalize">
-                                                    {h.diaSemana}: {h.horaInicio.substring(0,5)} - {h.horaFin.substring(0,5)}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-sm italic">No hay horarios registrados</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/*{promedio && (
-                        <div className="bg-yellow-50 border border-yellow-100 rounded-2xl p-4 text-center flex flex-col items-center justify-center min-w-[120px]">
-                            <span className="text-3xl font-bold text-yellow-700">{promedio}</span>
-                            <div className="flex text-red-600 my-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <Apple key={i} size={16} fill={i < Math.round(promedio) ? "currentColor" : "none"} />
-                                ))}
-                            </div>
-                            <span className="text-xs text-red-600 font-medium">{feria.resenas.length} reseñas</span>
-                        </div>
-                    )}*/}
+            {/* Botón superior dinámico */}
+            <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 mb-6 font-medium transition-colors"
+            >
+                <ArrowLeft size={16} />
+                <span>Volver</span>
+            </button>
+
+            {/* Cabecera de la Feria y Ubicación */}
+            <div className="bg-white shadow-sm rounded-xl border p-6 mb-8">
+
+                <div className="flex items-center gap-3 mb-4">
+                    <h1 className="text-3xl font-extrabold text-gray-900">{feria.nombre}</h1>
+                    <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                        {feria.tipo}
+                    </span>
+                </div>
+                <div className="flex gap-2 mb-6">
+                    {feria.comuna && (
+                        <span className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100">
+                            <MapPin size={12} /> {feria.comuna.nombre}
+                        </span>
+                    )}
                 </div>
 
+                {/* Detalles de la Ubicación Seleccionada */}
                 <div className="border-t pt-6">
+                    <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <MapPin size={12} /> Ubicación Seleccionada
+                    </h3>
+                    <div className="relative pl-12">
+                        <div className="absolute left-0 top-0 w-9 h-9 bg-green-50 rounded-full flex items-center justify-center text-green-600 border border-green-100 shadow-sm">
+                            <MapPin size={14} />
+                        </div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-bold text-gray-800 text-base">{ubicacionSeleccionada.callePrincipal}</h4>
+                            {ubicacionSeleccionada.numPuestos && (
+                                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-md text-[10px] font-bold flex items-center gap-1 border border-indigo-100">
+                                    <Store size={10} /> {ubicacionSeleccionada.numPuestos} puestos
+                                </span>
+                            )}
+                        </div>
+                        <p className="text-sm text-gray-500 mb-4">
+                            Entre {ubicacionSeleccionada.calleInicio || 'inicio'} y {ubicacionSeleccionada.calleTermino || 'fin'}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {ubicacionSeleccionada.diasFeria?.map((dia) => (
+                                <span key={dia.id} className="px-4 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 shadow-sm capitalize flex items-center gap-1.5">
+                                    <Clock size={12} className="text-gray-400" />
+                                    {dia.diaSemana} ({dia.horaInicio.slice(0, 5)} - {dia.horaFin.slice(0, 5)})
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-6 mb-6">
                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Descripción</h3>
                     <p className="text-gray-700 leading-relaxed">{feria.descripcion}</p>
                 </div>
+
+                {/* CARRUSEL DE RECORRIDO VIRTUAL */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <CarouselRecorrido />
+                </div>
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -99,12 +138,12 @@ export default function FeriaDetailPage() {
                     <section className="mb-10">
                         <div className="flex items-center gap-2 mb-6">
                             <Store className="text-green-600" />
-                            <h2 className="text-2xl font-bold text-gray-800">Feriantes en esta feria</h2>
+                            <h2 className="text-2xl font-bold text-gray-800">Feriantes en esta ubicación</h2>
                         </div>
 
-                        {feria.feriantes?.length > 0 ? (
+                        {ubicacionSeleccionada.feriantes?.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {feria.feriantes.map((f) => (
+                                {ubicacionSeleccionada.feriantes.map((f) => (
                                     <Link
                                         key={f.id}
                                         to={`/feriantes/${f.id}`}
@@ -122,7 +161,7 @@ export default function FeriaDetailPage() {
                             </div>
                         ) : (
                             <div className="bg-gray-50 border border-dashed rounded-xl p-8 text-center">
-                                <p className="text-gray-500">No hay feriantes registrados para esta feria aún.</p>
+                                <p className="text-gray-500">No hay feriantes registrados para esta ubicación aún.</p>
                             </div>
                         )}
                     </section>
@@ -180,7 +219,7 @@ export default function FeriaDetailPage() {
                     <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-2xl p-6 text-white shadow-lg">
                         <h3 className="text-xl font-bold mb-4">¿Cómo llegar?</h3>
                         <p className="text-blue-100 text-sm mb-6">
-                            Esta feria se encuentra en {feria.direccion}. Puedes usar nuestro mapa interactivo para ver la ruta exacta.
+                            Esta ubicación se encuentra en {ubicacionSeleccionada.callePrincipal}. Puedes usar nuestro mapa interactivo para ver la ruta exacta.
                         </p>
                         <Link to="/mapa" className="block text-center bg-white text-green-700 font-bold py-3 rounded-xl hover:bg-blue-50 transition-colors">
                             Ver en el Mapa
@@ -206,6 +245,6 @@ export default function FeriaDetailPage() {
                     </div>
                 </div>
             </div>
-            </div>
-            )
-            }
+        </div>
+    )
+}

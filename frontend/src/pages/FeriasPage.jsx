@@ -178,19 +178,21 @@ function FeriaCard({ feria }) {
                                         </span>
                                     ))}
                                 </div>
+
+                                <div className="mt-6 flex justify-end">
+                                    <Link
+                                        to={`/ferias/${feria.id}`}
+                                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-sm transition-all text-sm"
+                                    >
+                                        <span>Ver Detalle Completo</span>
+                                        <ArrowRight size={16} />
+                                    </Link>
+                                </div>
+
                             </div>
                         ))}
                     </div>
 
-                    <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
-                        <Link
-                            to={`/ferias/${feria.id}`}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-sm transition-all text-sm"
-                        >
-                            <span>Ver Detalle Completo</span>
-                            <ArrowRight size={16} />
-                        </Link>
-                    </div>
                 </div>
             )}
         </div>
