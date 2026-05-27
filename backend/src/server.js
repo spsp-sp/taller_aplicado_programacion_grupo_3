@@ -11,7 +11,7 @@ async function start() {
 
     // Sync models (use migrations in production)
     if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ force: true })
+      await sequelize.sync({ alter: true })
       console.log('Modelos sincronizados.')
     }
 
