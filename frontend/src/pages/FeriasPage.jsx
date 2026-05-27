@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Clock, ChevronDown, Store, Tag, Search, ArrowRight } from 'lucide-react'
+import { MapPin, Clock, ChevronDown, Store, Tag, Search, ArrowRight, Apple} from 'lucide-react'
 import { useFerias } from '../hooks/useFerias'
 import api from '@services/api'
 
@@ -117,7 +117,10 @@ function FeriaCard({ feria }) {
 
     const firstTime = feria.ubicaciones?.[0]?.diasFeria?.[0]
     const timeStr = firstTime ? `${firstTime.horaInicio.slice(0, 5)} a ${firstTime.horaFin.slice(0, 5)}` : 'Horario no definido'
-
+    const promedio = feria.resenas?.length > 0
+        ? (feria.resenas.reduce((acc, r) => acc + r.calificacion, 0) / feria.resenas.length).toFixed(1)
+        : null;
+    const cantidadResenas = feria.resenas?.length || 0;
     return (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
             <div
@@ -126,6 +129,11 @@ function FeriaCard({ feria }) {
             >
                 <div className="flex justify-between items-center mb-3">
                     <h2 className="text-2xl font-bold text-gray-800">{feria.nombre}</h2>
+                    <div className="flex items-center gap-1 mt-1 text-sm">
+                        <Apple size={14} className={promedio ? "fill-red-600 text-black" : "text-gray-300"} />
+                        <span className="font-bold text-gray-700">{promedio || 'Sin calificar'}</span>
+                        <span className="text-gray-400 text-xs">({cantidadResenas} {cantidadResenas === 1 ? 'reseña' : 'reseñas'})</span>
+                    </div>
                     <ChevronDown className={`text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
 

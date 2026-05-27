@@ -13,7 +13,7 @@ const seed = async () => {
     try {
 
         // Sincronizar modelos (esto creará las tablas si no existen)
-        await sequelize.sync({ force: true })
+        await sequelize.sync({ alter: true })
 
         //Compara tablas y aplica cambios
         //await sequelize.sync({ alter: true })
