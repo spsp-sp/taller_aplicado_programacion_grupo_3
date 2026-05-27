@@ -1,4 +1,4 @@
-const req = require("express/lib/request");
+const {Resena, Usuario} = require('../models');
 const create = async (req, res, next) => {
     try {
         // Extraemos todos los campos que envía el nuevo formulario
@@ -27,8 +27,6 @@ const create = async (req, res, next) => {
         next(err)
     }
 }
-
-const { Resena, Usuario } = require('../models');
 
 
 const getByFeria = async (req, res, next) => {

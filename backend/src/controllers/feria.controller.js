@@ -1,7 +1,7 @@
 const { Feria, Feriante, Resena, Usuario, Ubicacion, DiaFeria, Comuna } = require('../models')
 const { Op } = require('sequelize')
 
-// GET /api/ferias
+
 // GET /api/ferias
 const getAll = async (req, res, next) => {
     try {
@@ -37,6 +37,11 @@ const getAll = async (req, res, next) => {
                         // Si filtramos por día, forzamos a Sequelize a descartar los otros días
                         required: filtrarPorDia
                     }]
+                },
+                {
+                    model: Resena,
+                    as: 'resenas',
+                    attributes:['calificacion']
                 }
             ],
             order: [['nombre', 'ASC']],
