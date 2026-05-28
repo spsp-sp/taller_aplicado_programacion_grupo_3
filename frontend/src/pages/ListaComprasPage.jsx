@@ -1,23 +1,7 @@
 import { useState, useEffect } from 'react'
-import {
-    Plus,
-    Minus,
-    Trash2,
-    CheckCircle2,
-    Circle,
-    ShoppingBag,
-    MapPin,
-    Sparkles,
-    ChevronRight,
-    Store,
-    BadgeDollarSign,
-    Edit3,
-    ChevronDown,
-    X,
-    AlertTriangle
-} from 'lucide-react'
+import {Plus, Minus, Trash2, CheckCircle2, Circle, ShoppingBag, Sparkles, BadgeDollarSign,
+    Edit3, ChevronDown, X, AlertTriangle, MessageSquare} from 'lucide-react'
 import useListaStore from '@store/listaStore'
-import { listaService } from '@services/listaService'
 import toast from 'react-hot-toast'
 
 export default function ListaComprasPage() {
@@ -40,8 +24,6 @@ export default function ListaComprasPage() {
 
     const activeLista = getActiveLista()
     const [newItem, setNewItem] = useState({ nombre: '', cantidad: 1, unidad: 'un' })
-    const [sugerencias, setSugerencias] = useState(null)
-    const [cargandoSugerencias, setCargandoSugerencias] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isEditingName, setIsEditingName] = useState(false)
     const [tempName, setTempName] = useState('')
@@ -54,26 +36,6 @@ export default function ListaComprasPage() {
     useEffect(() => {
         fetchListas()
     }, [])
-
-    useEffect(() => {
-        if (activeLista?.items?.length > 0) {
-            obtenerSugerencias()
-        } else {
-            setSugerencias(null)
-        }
-    }, [activeLista?.items?.length, activeListaId])
-
-    const obtenerSugerencias = async () => {
-        try {
-            setCargandoSugerencias(true)
-            const { data } = await listaService.getSugerencias(activeLista.items)
-            setSugerencias(data)
-        } catch (err) {
-            console.error('Error al obtener sugerencias:', err)
-        } finally {
-            setCargandoSugerencias(false)
-        }
-    }
 
     const handleAddItem = async (e) => {
         e.preventDefault()
@@ -353,36 +315,26 @@ export default function ListaComprasPage() {
                     <div className="bg-green-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-green-100">
                         <div className="flex items-center gap-3 mb-6">
                             <Sparkles className="text-yellow-300" size={24} />
-                            <h2 className="font-black text-xl tracking-tight">Sugerencias</h2>
+                            <h2 className="font-black text-xl tracking-tight">Sugerencias con IA</h2>
                         </div>
-                        {cargandoSugerencias ? (
-                            <div className="py-10 text-center space-y-4">
-                                <div className="animate-spin rounded-full h-10 w-10 border-4 border-white/20 border-t-white mx-auto"></div>
-                                <p className="text-xs font-bold text-green-100 uppercase tracking-widest">Analizando ferias...</p>
+
+                        <div className="py-6 text-center space-y-6">
+                            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20">
+                                <div className="w-16 h-16 bg-yellow-300 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3 shadow-lg">
+                                    <MessageSquare className="text-green-800" size={32} />
+                                </div>
+                                <h3 className="font-black text-lg leading-tight mb-2">Próximamente: Casero Bot</h3>
+                                <p className="text-xs font-bold text-green-100 uppercase tracking-widest leading-relaxed opacity-80">
+                                    ¡Muy pronto podrás chatear con nuestra IA para obtener las mejores recomendaciones basadas en tu lista!
+                                </p>
                             </div>
-                        ) : sugerencias?.feriasSugeridas?.length > 0 ? (
-                            <div className="space-y-4">
-                                {sugerencias.feriasSugeridas.map((feria) => (
-                                    <div key={feria.id} className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/10 hover:bg-white/20 transition-all group">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-black text-sm leading-tight group-hover:text-yellow-200 transition-colors">{feria.nombre}</h3>
-                                            {feria.abiertaHoy && <span className="bg-yellow-300 text-green-900 text-[8px] font-black uppercase px-2 py-1 rounded-lg">Hoy</span>}
-                                        </div>
-                                        <div className="flex items-center gap-1 text-[10px] text-green-100 mb-4 font-bold">
-                                            <MapPin size={12} /> {feria.comuna}
-                                        </div>
-                                        <a href={`/ferias/${feria.id}`} className="flex items-center justify-between text-[10px] font-black bg-white text-green-700 px-5 py-3 rounded-2xl hover:bg-green-50 transition-all active:scale-95 shadow-lg">
-                                            VER FERIA <ChevronRight size={16} />
-                                        </a>
-                                    </div>
-                                ))}
+
+                            <div className="pt-4 border-t border-white/10">
+                                <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-yellow-300 animate-pulse">
+                                    <Sparkles size={12} /> EN DESARROLLO <Sparkles size={12} />
+                                </div>
                             </div>
-                        ) : (
-                            <div className="py-10 text-center opacity-50">
-                                <Store className="mx-auto mb-4" size={56} />
-                                <p className="text-xs font-bold uppercase tracking-widest leading-relaxed">Agrega productos para ver ferias recomendadas</p>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             </div>

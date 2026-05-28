@@ -1,11 +1,11 @@
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
-import {MapPin, Clock, Star, Store, MessageSquare, ArrowLeft} from 'lucide-react'
+import { MapPin, Clock, Star, Store, MessageSquare, ArrowLeft, ChevronLeft } from 'lucide-react'
 import { useFeria } from '@hooks/useFerias'
 import ResenaForm from '@components/Feria/ResenaForm'
 import useAuthStore from '../store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
-import CarouselRecorrido from "@components/Feria/RecorridoVirtual";
-
+import CarouselRecorrido from "@components/Feria/RecorridoVirtual"
+import BackToTop from '@components/common/BackToTop'
 
 export default function FeriaDetailPage() {
     const { id } = useParams()
@@ -55,22 +55,17 @@ export default function FeriaDetailPage() {
         )
     }
 
-    // Calcular promedio de calificación
-    const promedio = feria.resenas?.length > 0
-        ? (feria.resenas.reduce((acc, r) => acc + r.calificacion, 0) / feria.resenas.length).toFixed(1)
-        : null
-
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
 
             {/* Botón superior dinámico */}
-            <button
-                onClick={() => navigate(-1)}
-                className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 mb-6 font-medium transition-colors"
+            <Link
+                to="/ferias"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-green-600 transition-colors mb-6"
             >
-                <ArrowLeft size={16} />
-                <span>Volver</span>
-            </button>
+                <ChevronLeft size={18} />
+                Volver al directorio de ferias
+            </Link>
 
             {/* Cabecera de la Feria y Ubicación */}
             <div className="bg-white shadow-sm rounded-xl border p-6 mb-8">
@@ -174,7 +169,15 @@ export default function FeriaDetailPage() {
                         </div>
 
                         {user ? (
-                            <ResenaForm feriaId={id} onResenaCreated={handleResenaCreated} />
+                            user.rol === 'cliente' ? (
+                                <ResenaForm feriaId={id} onResenaCreated={handleResenaCreated} />
+                            ) : (
+                                <div className="bg-amber-50 p-4 rounded-xl border border-amber-100 mb-8 text-center">
+                                    <p className="text-amber-800 text-sm font-medium">
+                                        Como <strong>{user.rol}</strong>, puedes leer las opiniones pero la publicación de reseñas es exclusiva para clientes.
+                                    </p>
+                                </div>
+                            )
                         ) : (
                             <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 mb-8 text-center">
                                 <p className="text-green-800 mb-4">¿Has visitado esta feria? Comparte tu experiencia con otros.</p>
@@ -214,14 +217,17 @@ export default function FeriaDetailPage() {
                     </section>
                 </div>
 
-                {/* Columna Derecha: Información Lateral / Mapa (Opcional) */}
+                {/* Columna Derecha: Información Lateral */}
                 <div className="space-y-6">
                     <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-2xl p-6 text-white shadow-lg">
                         <h3 className="text-xl font-bold mb-4">¿Cómo llegar?</h3>
                         <p className="text-blue-100 text-sm mb-6">
                             Esta ubicación se encuentra en {ubicacionSeleccionada.callePrincipal}. Puedes usar nuestro mapa interactivo para ver la ruta exacta.
                         </p>
-                        <Link to="/mapa" className="block text-center bg-white text-green-700 font-bold py-3 rounded-xl hover:bg-blue-50 transition-colors">
+                        <Link
+                            to={`/mapa?lat=${ubicacionSeleccionada.latitud}&lng=${ubicacionSeleccionada.longitud}&ubi=${ubicacionSeleccionada.id}`}
+                            className="block text-center bg-white text-green-700 font-bold py-3 rounded-xl hover:bg-blue-50 transition-colors"
+                        >
                             Ver en el Mapa
                         </Link>
                     </div>
@@ -245,6 +251,7 @@ export default function FeriaDetailPage() {
                     </div>
                 </div>
             </div>
+            <BackToTop />
         </div>
     )
 }

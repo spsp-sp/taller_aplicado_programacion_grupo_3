@@ -2,7 +2,6 @@ const { Feriante, Usuario, Feria, Comuna, Ubicacion } = require('../models')
 const { Op } = require('sequelize')
 
 // GET /api/feriantes
-// Listar feriantes con filtros opcionales (comuna, rubro)
 const getAll = async (req, res, next) => {
     try {
         const { comunaId, rubro, estado = 'aprobado' } = req.query
@@ -27,9 +26,17 @@ const getAll = async (req, res, next) => {
             order: [['nombre', 'ASC']],
         })
         res.json(feriantes)
-    } catch (err) {
-        next(err)
-    }
+    } catch (err) { next(err) }
+}
+
+// GET /api/feriantes/count/pending (Solo Admin)
+const getPendingCount = async (req, res, next) => {
+    try {
+        const count = await Feriante.count({
+            where: { estado: 'pendiente', activo: true }
+        })
+        res.json({ count })
+    } catch (err) { next(err) }
 }
 
 // GET /api/feriantes/:id
@@ -49,47 +56,27 @@ const getById = async (req, res, next) => {
         })
         if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
         res.json(feriante)
-    } catch (err) {
-        next(err)
-    }
+    } catch (err) { next(err) }
 }
 
 // POST /api/feriantes
 const create = async (req, res, next) => {
     try {
-        const { ubicacionId, ubicacionesIds, feriaId, ...ferianteData } = req.body
+        const { ubicacionId, ubicacionesIds, ...ferianteData } = req.body
         const feriante = await Feriante.create({
             ...ferianteData,
             usuarioId: req.user.id,
-            estado: 'pendiente' // Siempre empieza como pendiente
+            estado: 'pendiente'
         })
 
-        // Asociar ubicaciones si vienen en el request
-        if (ubicacionesIds && Array.isArray(ubicacionesIds) && ubicacionesIds.length > 0) {
+        if (ubicacionesIds && Array.isArray(ubicacionesIds)) {
             await feriante.addUbicaciones(ubicacionesIds)
         } else if (ubicacionId) {
             await feriante.addUbicaciones([ubicacionId])
         }
 
         res.status(201).json(feriante)
-    } catch (err) {
-        next(err)
-    }
-}
-
-// PUT /api/feriantes/:id
-const update = async (req, res, next) => {
-    try {
-        const feriante = await Feriante.findByPk(req.params.id)
-        if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
-
-        // No permitimos cambiar el estado vía update normal, se usa approve/reject
-        const { estado, ...updateData } = req.body
-        await feriante.update(updateData)
-        res.json(feriante)
-    } catch (err) {
-        next(err)
-    }
+    } catch (err) { next(err) }
 }
 
 // PATCH /api/feriantes/:id/aprobar (Solo Admin)
@@ -97,12 +84,9 @@ const approve = async (req, res, next) => {
     try {
         const feriante = await Feriante.findByPk(req.params.id)
         if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
-
         await feriante.update({ estado: 'aprobado' })
         res.json({ message: 'Feriante aprobado correctamente.', feriante })
-    } catch (err) {
-        next(err)
-    }
+    } catch (err) { next(err) }
 }
 
 // PATCH /api/feriantes/:id/rechazar (Solo Admin)
@@ -110,12 +94,20 @@ const reject = async (req, res, next) => {
     try {
         const feriante = await Feriante.findByPk(req.params.id)
         if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
-
         await feriante.update({ estado: 'rechazado' })
         res.json({ message: 'Feriante rechazado.', feriante })
-    } catch (err) {
-        next(err)
-    }
+    } catch (err) { next(err) }
+}
+
+// PUT /api/feriantes/:id
+const update = async (req, res, next) => {
+    try {
+        const feriante = await Feriante.findByPk(req.params.id)
+        if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
+        const { estado, ...updateData } = req.body
+        await feriante.update(updateData)
+        res.json(feriante)
+    } catch (err) { next(err) }
 }
 
 // DELETE /api/feriantes/:id
@@ -123,11 +115,9 @@ const remove = async (req, res, next) => {
     try {
         const feriante = await Feriante.findByPk(req.params.id)
         if (!feriante) return res.status(404).json({ message: 'Feriante no encontrado.' })
-        await feriante.update({ activo: false }) // soft delete
+        await feriante.update({ activo: false })
         res.json({ message: 'Feriante desactivado.' })
-    } catch (err) {
-        next(err)
-    }
+    } catch (err) { next(err) }
 }
 
-module.exports = { getAll, getById, create, update, approve, reject, remove }
+module.exports = { getAll, getPendingCount, getById, create, update, approve, reject, remove }

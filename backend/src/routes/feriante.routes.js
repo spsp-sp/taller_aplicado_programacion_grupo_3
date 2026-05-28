@@ -12,6 +12,7 @@ router.put('/:id', verifyToken, requireRole('feriante', 'admin'), ferianteContro
 router.delete('/:id', verifyToken, requireRole('feriante', 'admin'), ferianteController.remove)
 
 // Rutas de Administración (Solo Admin)
+router.get('/count/pending', verifyToken, requireRole('admin'), ferianteController.getPendingCount)
 router.patch('/:id/aprobar', verifyToken, requireRole('admin'), ferianteController.approve)
 router.patch('/:id/rechazar', verifyToken, requireRole('admin'), ferianteController.reject)
 

@@ -25,20 +25,22 @@ export default function SolicitudesFeriantesPage() {
     queryFn: () => ferianteService.getFeriantes({ estado: activeTab }),
   })
 
-  const { mutate: aprobar, isPending: aprobando } = useMutation({
-    mutationFn: ferianteService.approveFeriante,
-    onSuccess: (data) => {
-      toast.success(data.message || 'Feriante aprobado')
-      queryClient.invalidateQueries({ queryKey: ['feriantes-admin'] })
-    },
-    onError: () => toast.error('Error al aprobar feriante'),
-  })
+      const { mutate: aprobar, isPending: aprobando } = useMutation({
+        mutationFn: ferianteService.approveFeriante,
+        onSuccess: (data) => {
+          toast.success(data.message || 'Feriante aprobado')
+          queryClient.invalidateQueries({ queryKey: ['feriantes-admin'] })
+          queryClient.invalidateQueries({queryKey: ['pending-count']})
+        },
+        onError: () => toast.error('Error al aprobar feriante'),
+      })
 
   const { mutate: rechazar, isPending: rechazando } = useMutation({
     mutationFn: ferianteService.rejectFeriante,
     onSuccess: (data) => {
       toast.success(data.message || 'Feriante rechazado')
       queryClient.invalidateQueries({ queryKey: ['feriantes-admin'] })
+      queryClient.invalidateQueries({queryKey: ['pending-count']})
     },
     onError: () => toast.error('Error al rechazar feriante'),
   })

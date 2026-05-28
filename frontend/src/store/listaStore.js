@@ -137,7 +137,19 @@ const useListaStore = create(
                 const activeLista = listas.find(l => l.id === activeListaId)
                 if (!activeLista) return
 
-                const updatedItems = activeLista.items.map(i => i.id === itemId ? { ...i, completado: !i.completado } : i)
+                const updatedItems = activeLista.items.map(i => {
+                    if (i.id === itemId) {
+                        const newCompletado = !i.completado
+                        return {
+                            ...i,
+                            completado: newCompletado,
+                            // Si desmarcamos el producto, reseteamos el precio a 0 para que se reste del total
+                            precioPagado: newCompletado ? i.precioPagado : 0
+                        }
+                    }
+                    return i
+                })
+
                 set({
                     listas: listas.map(l => l.id === activeListaId ? { ...l, items: updatedItems } : l)
                 })

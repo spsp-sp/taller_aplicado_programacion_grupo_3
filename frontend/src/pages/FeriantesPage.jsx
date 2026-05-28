@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ferianteService from '../services/ferianteService'
+import BackToTop from "@components/common/BackToTop"
 
 export default function FeriantesPage() {
   const [feriantes, setFeriantes] = useState([])
@@ -221,6 +222,7 @@ export default function FeriantesPage() {
           </div>
         )}
       </div>
+      <BackToTop/>
     </div>
   )
 }

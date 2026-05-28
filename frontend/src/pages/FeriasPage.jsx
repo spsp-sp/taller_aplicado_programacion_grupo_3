@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { MapPin, Clock, ChevronDown, Store, Tag, Search, ArrowRight, Apple} from 'lucide-react'
 import { useFerias } from '../hooks/useFerias'
 import api from '@services/api'
+import BackToTop from "@components/common/BackToTop"
 
 export default function FeriasPage() {
     const [filters, setFilters] = useState({ comunaId: '', dia: '', tipo: '' })
@@ -104,6 +105,7 @@ export default function FeriasPage() {
                     )}
                 </div>
             </div>
+            <BackToTop/>
         </div>
     )
 }
@@ -189,18 +191,16 @@ function FeriaCard({ feria }) {
 
                                 <div className="mt-6 flex justify-end">
                                     <Link
-                                        to={`/ferias/${feria.id}`}
+                                        to={`/ferias/${feria.id}?ubi=${ubi.id}`}
                                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-sm transition-all text-sm"
                                     >
                                         <span>Ver Detalle Completo</span>
                                         <ArrowRight size={16} />
                                     </Link>
                                 </div>
-
                             </div>
                         ))}
                     </div>
-
                 </div>
             )}
         </div>
