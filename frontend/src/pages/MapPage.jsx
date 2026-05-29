@@ -79,7 +79,7 @@ export default function MapPage() {
     const { data: ferias = [] } = useFeriasNearby({
         lat: position?.lat,
         lng: position?.lng,
-        radius: 500000,
+        radius: 200000,
     })
 
     // Forzar re-render del mapa cuando cambia la posición
@@ -95,8 +95,8 @@ export default function MapPage() {
             <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
                 <MapPin size={18} className={position ? 'text-green-600' : 'text-gray-400'} />
                 <span className="font-medium text-sm text-gray-700">
-          {urlUbi ? 'Viendo ubicación seleccionada' : (position ? `Tu ubicación: ${position.lat.toFixed(4)}, ${position.lng.toFixed(4)}` : 'Mapa de ferias')}
-        </span>
+                    {urlUbi ? 'Viendo ubicación seleccionada' : (position ? `Tu ubicación: ${position.lat.toFixed(4)}, ${position.lng.toFixed(4)}` : 'Mapa de ferias')}
+                </span>
 
                 <div className="ml-auto flex gap-2">
                     {urlUbi && (

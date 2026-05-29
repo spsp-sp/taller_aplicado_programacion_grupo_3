@@ -1,22 +1,37 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ferianteService from '../services/ferianteService'
+import { comunaService } from '../services/comunaService'
 import BackToTop from "@components/common/BackToTop"
 
 export default function FeriantesPage() {
   const [feriantes, setFeriantes] = useState([])
+  const [comunas, setComunas] = useState([])
   const [comunaFilter, setComunaFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState(null)
 
   useEffect(() => {
+    fetchComunas()
+  }, [])
+
+  useEffect(() => {
     fetchFeriantes()
   }, [comunaFilter])
+
+  const fetchComunas = async () => {
+    try {
+      const data = await comunaService.getAll()
+      setComunas(data)
+    } catch (err) {
+      console.error('Error al cargar comunas:', err)
+    }
+  }
 
   const fetchFeriantes = async () => {
     try {
       setLoading(true)
-      const data = await ferianteService.getFeriantes({ comuna: comunaFilter })
+      const data = await ferianteService.getFeriantes(comunaFilter ? { comunaId: comunaFilter } : {})
       setFeriantes(data)
     } catch (err) {
       console.error('Error al cargar feriantes:', err)
@@ -28,15 +43,6 @@ export default function FeriantesPage() {
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id)
   }
-
-  const COMUNAS = [
-    'Cerrillos', 'Cerro Navia', 'Conchalí', 'El Bosque', 'Estación Central', 'Huechuraba',
-    'Independencia', 'La Cisterna', 'La Florida', 'La Granja', 'La Pintana', 'La Reina',
-    'Las Condes', 'Lo Barnechea', 'Lo Espejo', 'Lo Prado', 'Macul', 'Maipú', 'Ñuñoa',
-    'Pedro Aguirre Cerda', 'Peñalolén', 'Providencia', 'Pudahuel', 'Quilicura',
-    'Quinta Normal', 'Recoleta', 'Renca', 'San Joaquín', 'San Miguel', 'San Ramón',
-    'Santiago', 'Vitacura', 'Puente Alto', 'San Bernardo'
-  ].sort()
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
@@ -63,8 +69,8 @@ export default function FeriantesPage() {
               onChange={(e) => setComunaFilter(e.target.value)}
             >
               <option value="">Todas las comunas</option>
-              {COMUNAS.map(comuna => (
-                <option key={comuna} value={comuna}>{comuna}</option>
+              {comunas.map(comuna => (
+                <option key={comuna.id} value={comuna.id}>{comuna.nombre}</option>
               ))}
             </select>
           </div>
@@ -222,7 +228,7 @@ export default function FeriantesPage() {
           </div>
         )}
       </div>
-      <BackToTop/>
+      <BackToTop />
     </div>
   )
 }
