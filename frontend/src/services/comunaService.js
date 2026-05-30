@@ -1,5 +1,8 @@
 import api from './api'
 
 export const comunaService = {
-    getAll: () => api.get('/comunas'),
+    getAll: async () => {
+        const { data } = await api.get('/comunas')
+        return data
+    },
 }

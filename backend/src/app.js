@@ -4,14 +4,14 @@ const helmet = require('helmet')
 const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
 
-const authRoutes     = require('./routes/auth.routes')
-const feriaRoutes    = require('./routes/feria.routes')
+const authRoutes = require('./routes/auth.routes')
+const feriaRoutes = require('./routes/feria.routes')
 const ferianteRoutes = require('./routes/feriante.routes')
-const reseñaRoutes   = require('./routes/resena.routes')
-const listaRoutes    = require('./routes/lista.routes')
-const iaRoutes       = require('./routes/ia.routes')
-const comunaRoutes    = require('./routes/comuna.routes')
-const errorHandler   = require('./middleware/errorHandler')
+const reseñaRoutes = require('./routes/resena.routes')
+const listaRoutes = require('./routes/lista.routes')
+const iaRoutes = require('./routes/ia.routes')
+const comunaRoutes = require('./routes/comuna.routes')
+const errorHandler = require('./middleware/errorHandler')
 
 const app = express()
 
@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }))
 // ── Rate limiting ──────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 min
-  max: 100,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
 })
@@ -42,13 +42,13 @@ app.use('/api', limiter)
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date() }))
 
 // ── Routes ─────────────────────────────────────────────────────────────────
-app.use('/api/auth',      authRoutes)
-app.use('/api/ferias',    feriaRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/ferias', feriaRoutes)
 app.use('/api/feriantes', ferianteRoutes)
-app.use('/api/resenas',   reseñaRoutes)
-app.use('/api/listas',    listaRoutes)
-app.use('/api/ia',        iaRoutes)
-app.use('/api/comunas',    comunaRoutes)
+app.use('/api/resenas', reseñaRoutes)
+app.use('/api/listas', listaRoutes)
+app.use('/api/ia', iaRoutes)
+app.use('/api/comunas', comunaRoutes)
 
 // ── Global error handler ───────────────────────────────────────────────────
 app.use(errorHandler)
