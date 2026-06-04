@@ -19,7 +19,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 }
 
 // Obtiene los datos de la base de datos y construye el prompt del sistema optimizado en tokens
-const buildSystemPrompt = async (userLat, userLng) => {
+const buildSystemPrompt = async (userLat, userLng, items) => {
     try {
         const ferias = await Feria.findAll({
             where: { activa: true },
@@ -90,10 +90,16 @@ ${resenas}
 ------------------`
         }).join('\n')
 
+        let itemsPrompt = ''
+        if (items && items.length > 0) {
+            itemsPrompt = `\nLa lista de compras actual del usuario es: ${items.join(', ')}.\nAyuda al usuario indicándole qué recetas típicas chilenas puede preparar con estos ingredientes, qué productos adicionales le faltaría comprar en la feria para completar dichas recetas, o en cuál de las ferias provistas le conviene más comprar estos productos.`
+        }
+
         return `Eres 'Casero Bot', el asistente virtual experto de 'ConYapa'. Tu misión es ayudar y recomendar ferias libres en Santiago de Chile de manera amigable, cercana y usando chilenismos.
 
 Aquí tienes los datos de las ferias disponibles (filtradas por cercanía si el usuario compartió su ubicación):
 ${feriasInfo}
+${itemsPrompt}
 
 Reglas:
 1. Recomienda solo ferias de la lista.
@@ -108,12 +114,12 @@ Reglas:
 // POST /api/ia/chat
 const chat = async (req, res, next) => {
     try {
-        const { message, history, lat, lng } = req.body
+        const { message, history, lat, lng, items } = req.body
         if (!message) {
             return res.status(400).json({ message: 'El mensaje es requerido.' })
         }
 
-        const systemPrompt = await buildSystemPrompt(lat, lng)
+        const systemPrompt = await buildSystemPrompt(lat, lng, items)
         // Mantener solo los últimos 2 mensajes del historial para ahorrar tokens
         const chatHistory = (history || []).slice(-2)
 
@@ -143,8 +149,8 @@ const chat = async (req, res, next) => {
 // POST /api/ia/recomendaciones
 const recomendaciones = async (req, res, next) => {
     try {
-        const { preferences, lat, lng } = req.body
-        const systemPrompt = await buildSystemPrompt(lat, lng)
+        const { preferences, lat, lng, items } = req.body
+        const systemPrompt = await buildSystemPrompt(lat, lng, items)
 
         const chatCompletion = await openai.chat.completions.create({
             messages: [

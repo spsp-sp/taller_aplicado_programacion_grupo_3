@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {Plus, Minus, Trash2, CheckCircle2, Circle, ShoppingBag, Sparkles, BadgeDollarSign,
-    Edit3, ChevronDown, X, AlertTriangle, MessageSquare} from 'lucide-react'
+    Edit3, ChevronDown, X, AlertTriangle, MessageSquare, Bot, User, Send} from 'lucide-react'
 import useListaStore from '@store/listaStore'
+import { chatService } from '@services/chatService'
 import toast from 'react-hot-toast'
 
 export default function ListaComprasPage() {
@@ -32,6 +33,22 @@ export default function ListaComprasPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [newListName, setNewListName] = useState('')
+
+    // Estados para Chatbot
+    const [chatMessages, setChatMessages] = useState([
+        { sender: 'bot', text: '¡Hola casero! ¿Qué tiene planeado cocinar hoy? Le puedo dar ideas de recetas con su lista de compras, sugerirle ingredientes faltantes o indicarle en qué ferias cercanas conseguirlos.' }
+    ])
+    const [chatInput, setChatInput] = useState('')
+    const [isChatLoading, setIsChatLoading] = useState(false)
+    const chatEndRef = useRef(null)
+
+    const scrollToChatBottom = () => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+
+    useEffect(() => {
+        scrollToChatBottom()
+    }, [chatMessages, isChatLoading])
 
     useEffect(() => {
         fetchListas()
@@ -67,6 +84,43 @@ export default function ListaComprasPage() {
             toast.success('Nombre actualizado')
         }
         setIsEditingName(false)
+    }
+
+    const handleSendChatMessage = async (e) => {
+        if (e) e.preventDefault()
+        if (!chatInput.trim() || isChatLoading) return
+
+        const userText = chatInput
+        const userMsg = { sender: 'user', text: userText }
+        setChatMessages(prev => [...prev, userMsg])
+        setChatInput('')
+        setIsChatLoading(true)
+
+        try {
+            const history = chatMessages.map(m => ({ sender: m.sender, text: m.text }))
+            const items = activeLista?.items?.map(i => i.nombre) || []
+
+            let lat = -33.4489
+            let lng = -70.6693
+            try {
+                const saved = localStorage.getItem('userLocation')
+                if (saved) {
+                    const parsed = JSON.parse(saved)
+                    if (parsed.lat && parsed.lng) {
+                        lat = parsed.lat
+                        lng = parsed.lng
+                    }
+                }
+            } catch (err) {}
+
+            const response = await chatService.sendMessage(userText, history, lat, lng, items)
+            setChatMessages(prev => [...prev, { sender: 'bot', text: response.data.response }])
+        } catch (err) {
+            console.error(err)
+            toast.error('No se pudo conectar con el Casero Bot')
+        } finally {
+            setIsChatLoading(false)
+        }
     }
 
     const adjustCantidad = (val) => {
@@ -312,29 +366,99 @@ export default function ListaComprasPage() {
                         <p className="text-[10px] font-bold text-gray-400 mt-4 uppercase">{activeLista?.items?.filter(i => i.completado).length || 0} productos pagados</p>
                     </div>
 
-                    <div className="bg-green-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-green-100">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Sparkles className="text-yellow-300" size={24} />
-                            <h2 className="font-black text-xl tracking-tight">Sugerencias con IA</h2>
-                        </div>
-
-                        <div className="py-6 text-center space-y-6">
-                            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20">
-                                <div className="w-16 h-16 bg-yellow-300 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3 shadow-lg">
-                                    <MessageSquare className="text-green-800" size={32} />
-                                </div>
-                                <h3 className="font-black text-lg leading-tight mb-2">Próximamente: Casero Bot</h3>
-                                <p className="text-xs font-bold text-green-100 uppercase tracking-widest leading-relaxed opacity-80">
-                                    ¡Muy pronto podrás chatear con nuestra IA para obtener las mejores recomendaciones basadas en tu lista!
-                                </p>
-                            </div>
-
-                            <div className="pt-4 border-t border-white/10">
-                                <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-yellow-300 animate-pulse">
-                                    <Sparkles size={12} /> EN DESARROLLO <Sparkles size={12} />
-                                </div>
+                    {/* Chatbot con IA integrado */}
+                    <div className="bg-gradient-to-b from-green-600 to-emerald-700 rounded-[2.5rem] p-6 text-white shadow-xl shadow-green-100 flex flex-col h-[520px]">
+                        <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+                            <Bot className="text-yellow-300 w-6 h-6 animate-pulse" />
+                            <div>
+                                <h2 className="font-black text-lg tracking-tight leading-none">Casero Bot 🥕</h2>
+                                <span className="text-[10px] text-green-200 font-bold">Asistente de compras</span>
                             </div>
                         </div>
+
+                        {/* Contenedor de mensajes */}
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 scrollbar-thin scrollbar-thumb-white/20">
+                            {chatMessages.map((msg, index) => {
+                                const isBot = msg.sender === 'bot'
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`flex ${isBot ? 'justify-start' : 'justify-end'} animate-in fade-in slide-in-from-bottom-2 duration-200`}
+                                    >
+                                        <div
+                                            className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
+                                                isBot
+                                                    ? 'bg-white/10 border border-white/20 text-white rounded-tl-none'
+                                                    : 'bg-yellow-300 text-green-950 rounded-tr-none font-bold'
+                                            }`}
+                                        >
+                                            {isBot ? (
+                                                <div className="space-y-1">
+                                                    {msg.text.split('\n').map((line, i) => {
+                                                        const parts = line.split(/(\*\*.*?\*\*)/g)
+                                                        return (
+                                                            <p key={i} className="my-0.5">
+                                                                {parts.map((part, index) => {
+                                                                    if (part.startsWith('**') && part.endsWith('**')) {
+                                                                        return <strong key={index} className="font-extrabold text-yellow-300">{part.slice(2, -2)}</strong>
+                                                                    }
+                                                                    return part
+                                                                })}
+                                                            </p>
+                                                        )
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                <p className="whitespace-pre-wrap">{msg.text}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+
+                            {isChatLoading && (
+                                <div className="flex justify-start items-center gap-2">
+                                    <div className="bg-white/10 border border-white/20 rounded-2xl rounded-tl-none px-4 py-3 flex gap-1 items-center">
+                                        <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                        <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                        <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                    </div>
+                                </div>
+                            )}
+                            <div ref={chatEndRef} />
+                        </div>
+
+                        {/* Botón rápido / Sugerencia */}
+                        {chatMessages.length === 1 && !isChatLoading && (
+                            <button
+                                onClick={() => {
+                                    setChatInput('¿Qué recetas me recomiendas hacer con mi lista y qué me faltaría?')
+                                }}
+                                className="mb-4 text-left w-full bg-white/10 hover:bg-white/20 transition-all border border-white/20 rounded-xl px-3 py-2 text-[10px] font-bold text-yellow-300 flex items-center justify-between active:scale-95"
+                            >
+                                <span>💡 Consultar recetas sugeridas</span>
+                                <Sparkles size={12} />
+                            </button>
+                        )}
+
+                        {/* Formulario de Input */}
+                        <form onSubmit={handleSendChatMessage} className="flex gap-2 mt-auto flex-shrink-0">
+                            <input
+                                type="text"
+                                value={chatInput}
+                                onChange={e => setChatInput(e.target.value)}
+                                disabled={isChatLoading}
+                                placeholder="Pregunta sobre tu lista..."
+                                className="flex-1 bg-white/10 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white placeholder:text-green-200/60 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:bg-white/15 transition-all"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isChatLoading || !chatInput.trim()}
+                                className="p-2.5 bg-yellow-300 hover:bg-yellow-400 text-green-950 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
+                            >
+                                <Send size={14} strokeWidth={2.5} />
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
