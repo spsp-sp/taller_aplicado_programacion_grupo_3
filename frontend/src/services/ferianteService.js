@@ -10,6 +10,11 @@ const getFerianteById = async (id) => {
   return data
 }
 
+const getMiSolicitud = async () => {
+  const { data } = await api.get('/feriantes/mi-solicitud')
+  return data
+}
+
 const approveFeriante = async (id) => {
   const { data } = await api.patch(`/feriantes/${id}/aprobar`)
   return data
@@ -28,6 +33,7 @@ const createPerfil = async (perfilData) => {
 export default {
   getFeriantes,
   getFerianteById,
+  getMiSolicitud,
   createPerfil,
   approveFeriante,
   rejectFeriante,

@@ -80,6 +80,19 @@ export default function Navbar() {
                             )}
                         </NavLink>
                     )}
+                    {/* LINK MI SOLICITUD para usuarios autenticados no admin */}
+                    {user && user.rol !== 'admin' && (
+                        <NavLink
+                            to="/mi-solicitud"
+                            className={({ isActive }) =>
+                                `flex items-center gap-1 text-sm font-medium transition-colors ${
+                                    isActive ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
+                                }`
+                            }
+                        >
+                            Mi solicitud
+                        </NavLink>
+                    )}
                 </div>
 
                 {/* Actions */}
@@ -145,6 +158,17 @@ export default function Navbar() {
                   {pendingCount}
                 </span>
                             )}
+                        </NavLink>
+                    )}
+                    {user && user.rol !== 'admin' && (
+                        <NavLink
+                            to="/mi-solicitud"
+                            onClick={() => setMenuOpen(false)}
+                            className={({ isActive }) =>
+                                `text-sm font-medium py-1 ${isActive ? 'text-primary-600' : 'text-gray-600'}`
+                            }
+                        >
+                            Mi solicitud
                         </NavLink>
                     )}
                     <div className="flex gap-2 pt-2 border-t border-gray-100">

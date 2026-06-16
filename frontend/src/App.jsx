@@ -19,6 +19,7 @@ import LoginPage from '@pages/auth/LoginPage'
 import RegisterPage from '@pages/auth/RegisterPage'
 import ProfilePage from '@pages/ProfilePage'
 import ListaComprasPage from '@pages/ListaComprasPage'
+import MiSolicitudPage from '@pages/MiSolicitudPage'
 import DashboardPage from '@pages/admin/DashboardPage'
 import SolicitudesFeriantesPage from '@pages/admin/SolicitudesFeriantesPage'
 import RegistroFeriantePage from '@pages/auth/RegistroFeriantePage'
@@ -59,6 +60,7 @@ export default function App() {
                             <Route path="/perfil" element={<ProfilePage />} />
                             <Route path="/lista-compras" element={<ListaComprasPage />} />
                             <Route path="/registro-feriante" element={<RegistroFeriantePage />} />
+                            <Route path="/mi-solicitud" element={<MiSolicitudPage />} />
                         </Route>
 
                         {/* Admin routes */}

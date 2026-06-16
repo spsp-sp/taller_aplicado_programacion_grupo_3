@@ -17,7 +17,7 @@ export default function ProfilePage() {
             <span className="badge bg-primary-100 text-primary-700 mt-1 capitalize">{user?.rol}</span>
           </div>
         </div>
-        <p className="text-sm text-gray-400">Próximamente: edición de perfil y preferencias.</p>
+        <p className="text-sm text-gray-400"></p>
       </div>
     </div>
   )

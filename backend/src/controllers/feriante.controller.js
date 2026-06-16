@@ -120,4 +120,25 @@ const remove = async (req, res, next) => {
     } catch (err) { next(err) }
 }
 
-module.exports = { getAll, getPendingCount, getById, create, update, approve, reject, remove }
+// GET /api/feriantes/mi-solicitud (Usuario autenticado)
+const getMiSolicitud = async (req, res, next) => {
+    try {
+        const feriante = await Feriante.findOne({
+            where: { usuarioId: req.user.id, activo: true },
+            include: [
+                { model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'email'] },
+                { model: Comuna, as: 'comuna' },
+                {
+                    model: Ubicacion,
+                    as: 'ubicaciones',
+                    through: { attributes: [] },
+                    include: [{ model: Feria, as: 'feria', include: [{ model: Comuna, as: 'comuna' }] }]
+                }
+            ],
+        })
+        // Si no tiene solicitud, devolvemos null (no un 404)
+        res.json(feriante || null)
+    } catch (err) { next(err) }
+}
+
+module.exports = { getAll, getPendingCount, getMiSolicitud, getById, create, update, approve, reject, remove }
