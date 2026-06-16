@@ -80,8 +80,8 @@ export default function Navbar() {
                             )}
                         </NavLink>
                     )}
-                    {/* LINK MI SOLICITUD para usuarios autenticados no admin */}
-                    {user && user.rol !== 'admin' && (
+                    {/* LINK MI SOLICITUD para usuarios autenticados con rol feriante */}
+                    {user && user.rol === 'feriante' && (
                         <NavLink
                             to="/mi-solicitud"
                             className={({ isActive }) =>
@@ -160,7 +160,7 @@ export default function Navbar() {
                             )}
                         </NavLink>
                     )}
-                    {user && user.rol !== 'admin' && (
+                    {user && user.rol === 'feriante' && (
                         <NavLink
                             to="/mi-solicitud"
                             onClick={() => setMenuOpen(false)}

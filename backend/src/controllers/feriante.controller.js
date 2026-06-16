@@ -62,6 +62,25 @@ const getById = async (req, res, next) => {
 // POST /api/feriantes
 const create = async (req, res, next) => {
     try {
+        const existing = await Feriante.findOne({
+            where: {
+                usuarioId: req.user.id,
+                activo: true,
+                estado: {
+                    [Op.in]: ['aprobado', 'pendiente']
+                }
+            }
+        })
+        if (existing) {
+            return res.status(400).json({ message: 'Ya tienes una solicitud aprobada o en revisión.' })
+        }
+
+        // Desactivamos solicitudes anteriores (por ejemplo, rechazadas) del mismo usuario
+        await Feriante.update(
+            { activo: false },
+            { where: { usuarioId: req.user.id, activo: true } }
+        )
+
         const { ubicacionId, ubicacionesIds, ...ferianteData } = req.body
         const feriante = await Feriante.create({
             ...ferianteData,
@@ -124,7 +143,8 @@ const remove = async (req, res, next) => {
 const getMiSolicitud = async (req, res, next) => {
     try {
         const feriante = await Feriante.findOne({
-            where: { usuarioId: req.user.id, activo: true },
+            where: { usuarioId: req.user.id },
+            order: [['createdAt', 'DESC']],
             include: [
                 { model: Usuario, as: 'usuario', attributes: ['id', 'nombre', 'email'] },
                 { model: Comuna, as: 'comuna' },

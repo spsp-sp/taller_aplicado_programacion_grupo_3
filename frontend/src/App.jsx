@@ -59,6 +59,10 @@ export default function App() {
                             <Route path="/chat" element={<ChatPage />} />
                             <Route path="/perfil" element={<ProfilePage />} />
                             <Route path="/lista-compras" element={<ListaComprasPage />} />
+                        </Route>
+
+                        {/* Feriante only routes */}
+                        <Route element={<RoleRoute allowedRoles={['feriante']} />}>
                             <Route path="/registro-feriante" element={<RegistroFeriantePage />} />
                             <Route path="/mi-solicitud" element={<MiSolicitudPage />} />
                         </Route>

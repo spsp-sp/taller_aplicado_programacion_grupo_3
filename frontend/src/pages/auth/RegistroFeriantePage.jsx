@@ -1,18 +1,30 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import ferianteService from '@services/ferianteService'
 import { feriaService } from '@services/feriaService'
 import useAuthStore from '@store/authStore'
-import { useQueryClient } from '@tanstack/react-query'
 
 export default function RegistroFeriantePage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const [ferias, setFerias] = useState([])
   const [loadingFerias, setLoadingFerias] = useState(true)
-  const queryClient = useQueryClient() // Recuérdalo importar de '@tanstack/react-query'
+  const queryClient = useQueryClient()
+
+  const { data: solicitud, isLoading: loadingSolicitud } = useQuery({
+    queryKey: ['mi-solicitud'],
+    queryFn: ferianteService.getMiSolicitud,
+    staleTime: 0,
+  })
+
+  useEffect(() => {
+    if (solicitud && (solicitud.estado === 'aprobado' || solicitud.estado === 'pendiente')) {
+      toast.error('Ya tienes una solicitud aprobada o en revisión.')
+      navigate('/mi-solicitud')
+    }
+  }, [solicitud, navigate])
 
   const [form, setForm] = useState({
     nombre: '',
@@ -43,11 +55,12 @@ export default function RegistroFeriantePage() {
   const { mutate: crearPerfil, isPending } = useMutation({
     mutationFn: ferianteService.createPerfil,
     onSuccess: () => {
-      toast.success('¡Solicitud enviada! Un administrador revisará tu perfil.', { duration: 2000 })
-      // Invalida la lista de feriantes del admin para que se descargue de nuevo
+      toast.success('¡Solicitud enviada! Un administrador revisará tu perfil.', { duration: 2500 })
+      // Invalida la lista de feriantes del admin y la solicitud del feriante para que se descargue de nuevo
       queryClient.invalidateQueries({ queryKey: ['feriantes-admin'] })
+      queryClient.invalidateQueries({ queryKey: ['mi-solicitud'] })
 
-      navigate('/perfil')
+      navigate('/mi-solicitud')
     },
     onError: (err) =>
       toast.error(err.response?.data?.message || 'Error al crear perfil de feriante'),
@@ -98,6 +111,17 @@ export default function RegistroFeriantePage() {
 
   // Obtenemos las ferias seleccionadas para mostrar sus ubicaciones
   const feriasSeleccionadasInfo = ferias.filter(f => selectedFerias.includes(f.id))
+
+  if (loadingSolicitud) {
+    return (
+      <div className="flex justify-center items-center py-32">
+        <svg className="animate-spin h-10 w-10 text-primary-500" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">

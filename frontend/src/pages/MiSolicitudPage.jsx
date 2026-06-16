@@ -290,10 +290,21 @@ export default function MiSolicitudPage() {
             ? 'Tu solicitud está siendo revisada. Vuelve pronto para ver si fue aprobada.'
             : solicitud.estado === 'aprobado'
             ? 'Ya apareces en el mapa y los clientes pueden ver tu puesto.'
-            : 'Si tienes dudas sobre el rechazo, puedes contactar al administrador de la plataforma.'
+            : 'Si tienes dudas sobre el rechazo, puedes contactar al administrador de la plataforma o crear una nueva solicitud.'
           }
         </p>
       </div>
+
+      {solicitud.estado === 'rechazado' && (
+        <div className="mt-6 flex justify-center">
+          <Link
+            to="/registro-feriante"
+            className="btn-primary px-6 py-2.5 text-sm font-semibold rounded-lg shadow-md shadow-primary-500/20"
+          >
+            ➕ Crear nueva solicitud
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
