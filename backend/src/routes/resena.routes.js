@@ -1,13 +1,14 @@
 const router = require('express').Router()
 const { body } = require('express-validator')
 const { getByFeria, create, update, remove } = require('../controllers/resena.controller')
-const { verifyToken } = require('../middleware/auth')
+const { verifyToken, requireRole } = require('../middleware/auth')
 const validate = require('../middleware/validate')
 
 router.get('/feria/:feriaId', getByFeria)
 
 router.post('/',
   verifyToken,
+  requireRole('cliente'),
   [
     body('feriaId').isInt().withMessage('feriaId inválido.'),
     body('calificacion').isInt({ min: 1, max: 5 }).withMessage('Calificación debe ser entre 1 y 5.'),

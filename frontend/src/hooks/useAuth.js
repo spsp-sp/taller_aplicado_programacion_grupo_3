@@ -29,7 +29,11 @@ export function useRegister() {
     onSuccess: ({ data }) => {
       setAuth(data.user, data.token)
       toast.success('¡Cuenta creada correctamente!')
-      navigate('/')
+      if (data.user.rol === 'feriante') {
+        navigate('/registro-feriante')
+      } else {
+        navigate('/')
+      }
     },
     onError: (err) =>
       toast.error(err.response?.data?.message || 'Error al registrarse'),

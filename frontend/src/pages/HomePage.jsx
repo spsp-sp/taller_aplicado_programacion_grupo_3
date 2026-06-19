@@ -25,32 +25,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {[
-          {
-            icon: <MapPin className="text-primary-600" size={32} />,
-            title: 'Mapa interactivo',
-            desc: 'Localiza ferias cercanas en tiempo real con OpenStreetMap y Leaflet.',
-          },
-          {
-            icon: <Star className="text-secondary-500" size={32} />,
-            title: 'Reseñas reales',
-            desc: 'Lee opiniones de otros consumidores y comparte tu experiencia.',
-          },
-          {
-            icon: <ShoppingBag className="text-primary-600" size={32} />,
-            title: 'Lista de compras',
-            desc: 'Planifica tus compras con IA y nunca olvides nada en la feria.',
-          },
-        ].map(({ icon, title, desc }) => (
-          <div key={title} className="card text-center p-6">
-            <div className="flex justify-center mb-4">{icon}</div>
-            <h2 className="font-semibold text-lg mb-2">{title}</h2>
-            <p className="text-gray-500 text-sm">{desc}</p>
-          </div>
-        ))}
-      </section>
+
     </div>
   )
 }

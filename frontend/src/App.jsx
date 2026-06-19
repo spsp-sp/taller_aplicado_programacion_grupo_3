@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import ScrollToTop from '@components/common/ScrollToTop'
 
 // Layouts
 import MainLayout from '@components/layout/MainLayout'
@@ -12,12 +13,16 @@ import MapPage from '@pages/MapPage'
 import FeriasPage from '@pages/FeriasPage'
 import FeriaDetailPage from '@pages/FeriaDetailPage'
 import FeriantesPage from '@pages/FeriantesPage'
+import FerianteDetailPage from '@pages/FerianteDetailPage'
 import ChatPage from '@pages/ChatPage'
 import LoginPage from '@pages/auth/LoginPage'
 import RegisterPage from '@pages/auth/RegisterPage'
 import ProfilePage from '@pages/ProfilePage'
 import ListaComprasPage from '@pages/ListaComprasPage'
+import MiSolicitudPage from '@pages/MiSolicitudPage'
 import DashboardPage from '@pages/admin/DashboardPage'
+import SolicitudesFeriantesPage from '@pages/admin/SolicitudesFeriantesPage'
+import RegistroFeriantePage from '@pages/auth/RegistroFeriantePage'
 import NotFoundPage from '@pages/NotFoundPage'
 
 // Guards
@@ -25,51 +30,60 @@ import PrivateRoute from '@components/auth/PrivateRoute'
 import RoleRoute from '@components/auth/RoleRoute'
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+    defaultOptions: {
+        queries: {
+            retry: 1,
+            staleTime: 1000 * 60 * 5, // 5 minutes
+        },
     },
-  },
 })
 
 export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Toaster position="top-right" />
-        <Routes>
-          {/* Public routes with main layout */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/mapa" element={<MapPage />} />
-            <Route path="/ferias" element={<FeriasPage />} />
-            <Route path="/ferias/:id" element={<FeriaDetailPage />} />
-            <Route path="/feriantes" element={<FeriantesPage />} />
+    return (
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <ScrollToTop />
+                <Toaster position="top-right" />
+                <Routes>
+                    {/* Public routes with main layout */}
+                    <Route element={<MainLayout />}>
+                        <Route path="/" element={<MapPage />} />
+                        <Route path="/mapa" element={<MapPage />} />
+                        <Route path="/ferias" element={<FeriasPage />} />
+                        <Route path="/ferias/:id" element={<FeriaDetailPage />} />
+                        <Route path="/feriantes" element={<FeriantesPage />} />
+                        <Route path="/feriantes/:id" element={<FerianteDetailPage />} />
 
-            {/* Protected routes */}
-            <Route element={<PrivateRoute />}>
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/perfil" element={<ProfilePage />} />
-              <Route path="/lista-compras" element={<ListaComprasPage />} />
-            </Route>
+                        {/* Protected routes */}
+                        <Route element={<PrivateRoute />}>
+                            <Route path="/chat" element={<ChatPage />} />
+                            <Route path="/perfil" element={<ProfilePage />} />
+                            <Route path="/lista-compras" element={<ListaComprasPage />} />
+                        </Route>
 
-            {/* Admin routes */}
-            <Route element={<RoleRoute allowedRoles={['admin']} />}>
-              <Route path="/admin" element={<DashboardPage />} />
-            </Route>
-          </Route>
+                        {/* Feriante only routes */}
+                        <Route element={<RoleRoute allowedRoles={['feriante']} />}>
+                            <Route path="/registro-feriante" element={<RegistroFeriantePage />} />
+                            <Route path="/mi-solicitud" element={<MiSolicitudPage />} />
+                        </Route>
 
-          {/* Auth routes with separate layout */}
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/registro" element={<RegisterPage />} />
-          </Route>
+                        {/* Admin routes */}
+                        <Route element={<RoleRoute allowedRoles={['admin']} />}>
+                            <Route path="/admin" element={<DashboardPage />} />
+                            <Route path="/admin/solicitudes" element={<SolicitudesFeriantesPage />} />
+                        </Route>
+                    </Route>
 
-          {/* 404 */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
-  )
+                    {/* Auth routes with separate layout */}
+                    <Route element={<AuthLayout />}>
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/registro" element={<RegisterPage />} />
+                    </Route>
+
+                    {/* 404 */}
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </BrowserRouter>
+        </QueryClientProvider>
+    )
 }
