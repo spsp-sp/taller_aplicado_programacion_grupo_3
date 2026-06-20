@@ -35,6 +35,7 @@ export default function RegistroFeriantePage() {
 
   const [selectedFerias, setSelectedFerias] = useState([])
   const [selectedUbicaciones, setSelectedUbicaciones] = useState([])
+  const [comunaIdFilter, setComunaIdFilter] = useState('')
 
   useEffect(() => {
     feriaService.getAll()
@@ -111,6 +112,19 @@ export default function RegistroFeriantePage() {
 
   // Obtenemos las ferias seleccionadas para mostrar sus ubicaciones
   const feriasSeleccionadasInfo = ferias.filter(f => selectedFerias.includes(f.id))
+
+  // Obtenemos las comunas únicas de las ferias para el filtro
+  const uniqueComunas = Array.from(
+    new Map(
+      ferias
+        .filter((f) => f.comuna)
+        .map((f) => [f.comuna.id, f.comuna])
+    ).values()
+  ).sort((a, b) => a.nombre.localeCompare(b.nombre))
+
+  const filteredFerias = comunaIdFilter
+    ? ferias.filter((f) => f.comuna?.id?.toString() === comunaIdFilter.toString())
+    : ferias
 
   if (loadingSolicitud) {
     return (
@@ -250,24 +264,51 @@ export default function RegistroFeriantePage() {
               <p className="text-xs font-normal text-gray-500 mt-0.5">Puedes seleccionar más de una.</p>
             </label>
 
+            {!loadingFerias && (
+              <div className="mb-4">
+                <label htmlFor="comuna-filter" className="block text-xs font-semibold text-gray-600 uppercase mb-1.5">
+                  Filtrar por comuna
+                </label>
+                <select
+                  id="comuna-filter"
+                  value={comunaIdFilter}
+                  onChange={(e) => setComunaIdFilter(e.target.value)}
+                  className="input-field max-w-sm text-sm py-2"
+                >
+                  <option value="">Todas las comunas</option>
+                  {uniqueComunas.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {loadingFerias ? (
               <p className="text-sm text-gray-500">Cargando ferias...</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-lg bg-gray-50">
-                {ferias.map((f) => (
-                  <label key={f.id} className="flex items-start gap-3 p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary-300 hover:bg-primary-50 transition-colors">
-                    <input
-                      type="checkbox"
-                      className="mt-1 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                      checked={selectedFerias.includes(f.id)}
-                      onChange={() => toggleFeria(f.id)}
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800">{f.nombre}</p>
-                      <p className="text-xs text-gray-500">{f.comuna?.nombre}</p>
-                    </div>
-                  </label>
-                ))}
+                {filteredFerias.length > 0 ? (
+                  filteredFerias.map((f) => (
+                    <label key={f.id} className="flex items-start gap-3 p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary-300 hover:bg-primary-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        className="mt-1 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                        checked={selectedFerias.includes(f.id)}
+                        onChange={() => toggleFeria(f.id)}
+                      />
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">{f.nombre}</p>
+                        <p className="text-xs text-gray-500">{f.comuna?.nombre}</p>
+                      </div>
+                    </label>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 p-4 col-span-2 text-center">
+                    No se encontraron ferias en la comuna seleccionada.
+                  </p>
+                )}
               </div>
             )}
           </div>
