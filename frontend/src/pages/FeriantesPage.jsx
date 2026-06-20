@@ -8,8 +8,21 @@ export default function FeriantesPage() {
   const [feriantes, setFeriantes] = useState([])
   const [comunas, setComunas] = useState([])
   const [comunaFilter, setComunaFilter] = useState('')
+  const [rubroFilter, setRubroFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState(null)
+
+  const rubros = [
+    'Frutas y verduras',
+    'Carnes y embutidos',
+    'Pescados y mariscos',
+    'Ropa y calzado',
+    'Artesanía',
+    'Flores y plantas',
+    'Comida preparada',
+    'Abarrotes',
+    'Otro',
+  ]
 
   useEffect(() => {
     fetchComunas()
@@ -17,7 +30,7 @@ export default function FeriantesPage() {
 
   useEffect(() => {
     fetchFeriantes()
-  }, [comunaFilter])
+  }, [comunaFilter, rubroFilter])
 
   const fetchComunas = async () => {
     try {
@@ -31,7 +44,10 @@ export default function FeriantesPage() {
   const fetchFeriantes = async () => {
     try {
       setLoading(true)
-      const data = await ferianteService.getFeriantes(comunaFilter ? { comunaId: comunaFilter } : {})
+      const params = {}
+      if (comunaFilter) params.comunaId = comunaFilter
+      if (rubroFilter) params.rubro = rubroFilter
+      const data = await ferianteService.getFeriantes(params)
       setFeriantes(data)
     } catch (err) {
       console.error('Error al cargar feriantes:', err)
@@ -74,6 +90,24 @@ export default function FeriantesPage() {
               ))}
             </select>
           </div>
+
+          <div className="flex-1 w-full">
+            <label htmlFor="rubro" className="block text-sm font-semibold text-gray-700 mb-2">
+              Seleccionar Rubro
+            </label>
+            <select
+              id="rubro"
+              className="input-field py-3 text-base"
+              value={rubroFilter}
+              onChange={(e) => setRubroFilter(e.target.value)}
+            >
+              <option value="">Todos los rubros</option>
+              {rubros.map(rubro => (
+                <option key={rubro} value={rubro}>{rubro}</option>
+              ))}
+            </select>
+          </div>
+
           <button
             onClick={fetchFeriantes}
             className="btn-primary w-full md:w-auto h-[46px] px-8"
@@ -224,7 +258,7 @@ export default function FeriantesPage() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 01-9-3.5" />
             </svg>
-            <p className="text-gray-500">No se encontraron feriantes en esta comuna.</p>
+            <p className="text-gray-500">No se encontraron feriantes con los criterios seleccionados.</p>
           </div>
         )}
       </div>
