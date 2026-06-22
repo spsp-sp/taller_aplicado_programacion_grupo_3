@@ -1,11 +1,14 @@
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
-import { MapPin, Clock, Star, Store, MessageSquare, ArrowLeft, ChevronLeft } from 'lucide-react'
+import { useState } from 'react'
+import { MapPin, Clock, Star, Store, MessageSquare, ArrowLeft, ChevronLeft, Trash2, Edit } from 'lucide-react'
 import { useFeria } from '@hooks/useFerias'
 import ResenaForm from '@components/Feria/ResenaForm'
 import useAuthStore from '../store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
 import CarouselRecorrido from "@components/Feria/RecorridoVirtual"
 import BackToTop from '@components/common/BackToTop'
+import { resenaService } from '../services/resenaService'
+import { toast } from 'react-hot-toast'
 
 export default function FeriaDetailPage() {
     const { id } = useParams()
@@ -17,8 +20,25 @@ export default function FeriaDetailPage() {
     const { user } = useAuthStore()
     const queryClient = useQueryClient()
 
-    const handleResenaCreated = () => {
+    const [editingResenaId, setEditingResenaId] = useState(null)
+
+    const handleResenaSubmitted = () => {
+        setEditingResenaId(null)
         queryClient.invalidateQueries(['feria', id])
+    }
+
+    const handleDeleteResena = async (resenaId) => {
+        if (!window.confirm('¿Estás seguro de que deseas eliminar esta reseña?')) {
+            return
+        }
+        try {
+            await resenaService.delete(resenaId)
+            toast.success('¡Reseña eliminada con éxito!')
+            queryClient.invalidateQueries(['feria', id])
+        } catch (error) {
+            toast.error('Error al eliminar la reseña')
+            console.error(error)
+        }
     }
 
     if (isLoading) return (
@@ -170,7 +190,7 @@ export default function FeriaDetailPage() {
 
                         {user ? (
                             user.rol === 'cliente' ? (
-                                <ResenaForm feriaId={id} onResenaCreated={handleResenaCreated} />
+                                <ResenaForm feriaId={id} onResenaCreated={handleResenaSubmitted} />
                             ) : (
                                 <div className="bg-amber-50 p-4 rounded-xl border border-amber-100 mb-8 text-center">
                                     <p className="text-amber-800 text-sm font-medium">
@@ -189,27 +209,65 @@ export default function FeriaDetailPage() {
 
                         <div className="space-y-4">
                             {feria.resenas?.length > 0 ? (
-                                feria.resenas.map((r) => (
-                                    <div key={r.id} className="bg-white border rounded-xl p-5 shadow-sm">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xs">
-                                                    {r.usuario?.nombre.charAt(0)}
+                                feria.resenas.map((r) => {
+                                    if (editingResenaId === r.id) {
+                                        return (
+                                            <ResenaForm
+                                                key={r.id}
+                                                feriaId={id}
+                                                resena={r}
+                                                onResenaCreated={handleResenaSubmitted}
+                                                onCancel={() => setEditingResenaId(null)}
+                                            />
+                                        )
+                                    }
+                                    return (
+                                        <div key={r.id} className="bg-white border rounded-xl p-5 shadow-sm">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xs">
+                                                        {r.usuario?.nombre.charAt(0)}
+                                                    </div>
+                                                    <span className="font-bold text-gray-900">{r.usuario?.nombre}</span>
                                                 </div>
-                                                <span className="font-bold text-gray-900">{r.usuario?.nombre}</span>
+                                                <div className="flex text-yellow-400">
+                                                    {Array.from({ length: 5 }).map((_, i) => (
+                                                        <Star key={i} size={14} fill={i < r.calificacion ? "currentColor" : "none"} />
+                                                    ))}
+                                                </div>
                                             </div>
-                                            <div className="flex text-yellow-400">
-                                                {Array.from({ length: 5 }).map((_, i) => (
-                                                    <Star key={i} size={14} fill={i < r.calificacion ? "currentColor" : "none"} />
-                                                ))}
+                                            <p className="text-gray-700 text-sm leading-relaxed italic">"{r.comentario}"</p>
+
+                                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                                                <div className="flex gap-3">
+                                                    {user && user.id === r.usuarioId && (
+                                                        <button
+                                                            onClick={() => setEditingResenaId(r.id)}
+                                                            className="flex items-center gap-1 text-xs font-semibold text-green-600 hover:text-green-500 transition-colors"
+                                                            title="Editar reseña"
+                                                        >
+                                                            <Edit size={13} />
+                                                            <span>Editar</span>
+                                                        </button>
+                                                    )}
+                                                    {user && (user.id === r.usuarioId || user.rol === 'admin') && (
+                                                        <button
+                                                            onClick={() => handleDeleteResena(r.id)}
+                                                            className="flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-800 transition-colors"
+                                                            title="Eliminar reseña"
+                                                        >
+                                                            <Trash2 size={13} />
+                                                            <span>Eliminar</span>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <p className="text-[10px] text-gray-400">
+                                                    Publicado el {new Date(r.createdAt).toLocaleDateString()}
+                                                </p>
                                             </div>
                                         </div>
-                                        <p className="text-gray-700 text-sm leading-relaxed italic">"{r.comentario}"</p>
-                                        <p className="text-[10px] text-gray-400 mt-3 text-right">
-                                            Publicado el {new Date(r.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                ))
+                                    )
+                                })
                             ) : (
                                 <p className="text-center text-gray-500 py-10">Sé el primero en dejar una reseña para esta feria.</p>
                             )}
