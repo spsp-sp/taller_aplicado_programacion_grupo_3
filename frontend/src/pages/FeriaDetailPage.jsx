@@ -9,6 +9,7 @@ import CarouselRecorrido from "@components/Feria/RecorridoVirtual"
 import BackToTop from '@components/common/BackToTop'
 import { resenaService } from '../services/resenaService'
 import { toast } from 'react-hot-toast'
+import ConfirmModal from '@components/common/ConfirmModal'
 
 export default function FeriaDetailPage() {
     const { id } = useParams()
@@ -21,23 +22,32 @@ export default function FeriaDetailPage() {
     const queryClient = useQueryClient()
 
     const [editingResenaId, setEditingResenaId] = useState(null)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [resenaToDelete, setResenaToDelete] = useState(null)
 
     const handleResenaSubmitted = () => {
         setEditingResenaId(null)
         queryClient.invalidateQueries(['feria', id])
     }
 
-    const handleDeleteResena = async (resenaId) => {
-        if (!window.confirm('¿Estás seguro de que deseas eliminar esta reseña?')) {
-            return
-        }
+    const handleDeleteClick = (resenaId) => {
+        setResenaToDelete(resenaId)
+        setIsDeleteModalOpen(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!resenaToDelete) return
+
         try {
-            await resenaService.delete(resenaId)
+            await resenaService.delete(resenaToDelete)
             toast.success('¡Reseña eliminada con éxito!')
             queryClient.invalidateQueries(['feria', id])
         } catch (error) {
             toast.error('Error al eliminar la reseña')
             console.error(error)
+        } finally {
+            setIsDeleteModalOpen(false)
+            setResenaToDelete(null)
         }
     }
 
@@ -77,6 +87,19 @@ export default function FeriaDetailPage() {
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
+
+            {/* Modal de Confirmación para Eliminar Reseña */}
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="¿Eliminar reseña?"
+                message={
+                    <p>
+                        Estás a punto de borrar tu opinión sobre <span className="text-gray-700 font-bold">"{feria.nombre}"</span>. Esta acción no se puede deshacer.
+                    </p>
+                }
+            />
 
             {/* Botón superior dinámico */}
             <Link
@@ -252,7 +275,7 @@ export default function FeriaDetailPage() {
                                                     )}
                                                     {user && (user.id === r.usuarioId || user.rol === 'admin') && (
                                                         <button
-                                                            onClick={() => handleDeleteResena(r.id)}
+                                                            onClick={() => handleDeleteClick(r.id)}
                                                             className="flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-800 transition-colors"
                                                             title="Eliminar reseña"
                                                         >
