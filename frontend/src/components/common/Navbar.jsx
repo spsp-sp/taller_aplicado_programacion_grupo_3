@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { MapPin, ShoppingCart, MessageSquare, LogOut, User, Menu, X } from 'lucide-react'
+import { MapPin, ListChecks, MessageSquare, LogOut, User, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import useAuthStore from '@store/authStore'
@@ -103,7 +103,7 @@ export default function Navbar() {
                                 <MessageSquare size={20} />
                             </NavLink>
                             <NavLink to="/lista-compras" className="p-2 text-gray-500 hover:text-primary-600 transition-colors">
-                                <ShoppingCart size={20} />
+                                <ListChecks size={20} />
                             </NavLink>
                             <NavLink to="/perfil" className="p-2 text-gray-500 hover:text-primary-600 transition-colors">
                                 <User size={20} />

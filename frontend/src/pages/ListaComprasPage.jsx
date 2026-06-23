@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import {Plus, Minus, Trash2, CheckCircle2, Circle, ShoppingBag, Sparkles, BadgeDollarSign,
-    Edit3, ChevronDown, X, AlertTriangle, MessageSquare, Bot, User, Send} from 'lucide-react'
+    Edit3, ChevronDown, X, Bot, Send} from 'lucide-react'
 import useListaStore from '@store/listaStore'
 import { chatService } from '@services/chatService'
 import toast from 'react-hot-toast'
+import ConfirmModal from "@components/common/ConfirmModal.jsx";
 
 export default function ListaComprasPage() {
     const {
@@ -43,12 +44,31 @@ export default function ListaComprasPage() {
     const chatEndRef = useRef(null)
 
     const scrollToChatBottom = () => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        // Usar setTimeout para asegurar que el DOM está actualizado
+        setTimeout(() => {
+            const container = document.querySelector('.chat-messages-container')
+            if (container) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                })
+            }
+        }, 100)
     }
 
+    // Solo scrollear cuando se añade un mensaje nuevo (no en cada render)
     useEffect(() => {
-        scrollToChatBottom()
-    }, [chatMessages, isChatLoading])
+        if (chatMessages.length > 1) { // Si hay más de 1 mensaje (el inicial)
+            scrollToChatBottom()
+        }
+    }, [chatMessages.length]) // Dependencia solo en la cantidad de mensajes
+
+// Scrollear cuando termina la carga
+    useEffect(() => {
+        if (!isChatLoading && chatMessages.length > 1) {
+            scrollToChatBottom()
+        }
+    }, [isChatLoading])
 
     useEffect(() => {
         fetchListas()
@@ -180,30 +200,17 @@ export default function ListaComprasPage() {
             )}
 
             {/* MODAL: ELIMINAR LISTA */}
-            {isDeleteModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <div className="flex flex-col items-center text-center">
-                            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
-                                <AlertTriangle size={40} className="text-red-500" />
-                            </div>
-                            <h2 className="text-2xl font-black text-gray-800 mb-2">¿Eliminar lista?</h2>
-                            <p className="text-gray-400 font-medium mb-8">
-                                Estás a punto de borrar <span className="text-gray-700 font-bold">"{activeLista?.nombre}"</span>. Esta acción no se puede deshacer.
-                            </p>
-                            <div className="flex w-full gap-3">
-                                <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-4 bg-gray-50 text-gray-500 rounded-2xl font-black hover:bg-gray-100 transition-all">
-                                    CANCELAR
-                                </button>
-                                <button onClick={handleDeleteLista} className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black shadow-lg shadow-red-100 hover:bg-red-600 transition-all active:scale-95">
-                                    ELIMINAR
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDeleteLista}
+                title="¿Eliminar lista?"
+                message={
+                    <p>
+                        Estás a punto de borrar <span className="text-gray-700 font-bold">"{activeLista?.nombre}"</span>. Esta acción no se puede deshacer.
+                    </p>
+                }
+            />
             {/* Header con Selector de Listas */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div className="flex items-center gap-4">
@@ -377,7 +384,7 @@ export default function ListaComprasPage() {
                         </div>
 
                         {/* Contenedor de mensajes */}
-                        <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 scrollbar-thin scrollbar-thumb-white/20">
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 scrollbar-thin scrollbar-thumb-white/20 chat-messages-cpmtainer">
                             {chatMessages.map((msg, index) => {
                                 const isBot = msg.sender === 'bot'
                                 return (

@@ -138,9 +138,6 @@ export default function FeriantesPage() {
                 <div>
                   <h3 className="text-xl font-bold text-gray-800">{f.nombre}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
-                      {f.dias || 'Días no especificados'}
-                    </span>
                     <span className="text-sm text-gray-500">•</span>
                     <span className="text-sm text-gray-500">{f.comuna?.nombre || 'Comuna no especificada'}</span>
                   </div>
@@ -192,32 +189,6 @@ export default function FeriantesPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <div>
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-                          Ferias asociadas
-                        </h4>
-                        {f.ferias && f.ferias.length > 0 ? (
-                          <ul className="space-y-2">
-                            {f.ferias.map(feria => (
-                              <li key={feria.id}>
-                                <Link
-                                  to={`/ferias/${feria.id}`}
-                                  className="block p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 transition-all duration-200 group text-sm"
-                                >
-                                  <span className="font-bold text-gray-700 group-hover:text-primary-700 block transition-colors duration-150">
-                                    {feria.nombre}
-                                  </span>
-                                  <span className="text-gray-500 group-hover:text-primary-600 block text-xs mt-0.5 transition-colors duration-150">
-                                    {feria.direccion}
-                                  </span>
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-sm text-gray-500 italic">No hay ferias asociadas.</p>
-                        )}
-                      </div>
 
                       <div className="grid grid-cols-1 gap-4">
                         <div>
