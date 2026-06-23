@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import ferianteService from '../services/ferianteService'
 import { comunaService } from '../services/comunaService'
@@ -12,20 +12,12 @@ export default function FeriantesPage() {
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState(null)
 
-  const rubros = [
-    'Frutas y verduras',
-    'Carnes y embutidos',
-    'Pescados y mariscos',
-    'Ropa y calzado',
-    'Artesanía',
-    'Flores y plantas',
-    'Comida preparada',
-    'Abarrotes',
-    'Otro',
-  ]
+  // 1. Nuevo estado para recordar TODOS los rubros globales del sistema sin alterarse por el filtro
+  const [todosLosRubrosSistema, setTodosLosRubrosSistema] = useState([])
 
   useEffect(() => {
     fetchComunas()
+    fetchRubrosIniciales() // 2. Cargamos todos los rubros al montar el componente
   }, [])
 
   useEffect(() => {
@@ -38,6 +30,21 @@ export default function FeriantesPage() {
       setComunas(data)
     } catch (err) {
       console.error('Error al cargar comunas:', err)
+    }
+  }
+
+  // 3. Función que pide una sola vez todos los feriantes (sin filtros) para mapear el catálogo completo de rubros
+  const fetchRubrosIniciales = async () => {
+    try {
+      const data = await ferianteService.getFeriantes({}) // Sin parámetros
+      if (data && data.length > 0) {
+        const unicos = [...new Set(data.map(f => f.rubro))]
+          .filter(rubro => rubro && rubro.trim() !== '')
+          .sort((a, b) => a.localeCompare(b))
+        setTodosLosRubrosSistema(unicos)
+      }
+    } catch (err) {
+      console.error('Error al generar catálogo de rubros:', err)
     }
   }
 
@@ -102,7 +109,7 @@ export default function FeriantesPage() {
               onChange={(e) => setRubroFilter(e.target.value)}
             >
               <option value="">Todos los rubros</option>
-              {rubros.map(rubro => (
+              {todosLosRubrosSistema.map(rubro => (
                 <option key={rubro} value={rubro}>{rubro}</option>
               ))}
             </select>
