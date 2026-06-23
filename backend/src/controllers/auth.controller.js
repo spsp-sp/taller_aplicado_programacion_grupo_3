@@ -60,4 +60,22 @@ const me = async (req, res, next) => {
   }
 }
 
-module.exports = { register, login, me }
+// POST /api/auth/forgot-password
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body
+
+    const user = await Usuario.findOne({ where: { email } })
+    if (!user) return res.status(404).json({ message: 'El correo electrónico no está registrado.' })
+
+    const tempPassword = 'conyapa123'
+    const hashedPassword = await bcrypt.hash(tempPassword, SALT_ROUNDS)
+    await user.update({ password: hashedPassword })
+
+    res.json({ message: 'Contraseña restablecida con éxito.', tempPassword })
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { register, login, me, forgotPassword }

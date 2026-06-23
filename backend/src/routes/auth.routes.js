@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const { body } = require('express-validator')
-const { register, login, me } = require('../controllers/auth.controller')
+const { register, login, me, forgotPassword } = require('../controllers/auth.controller')
 const { verifyToken } = require('../middleware/auth')
 const validate = require('../middleware/validate')
 
@@ -25,5 +25,13 @@ router.post('/login',
 )
 
 router.get('/me', verifyToken, me)
+
+router.post('/forgot-password',
+  [
+    body('email').isEmail().withMessage('Email inválido.'),
+  ],
+  validate,
+  forgotPassword
+)
 
 module.exports = router

@@ -39,3 +39,9 @@ export function useRegister() {
       toast.error(err.response?.data?.message || 'Error al registrarse'),
   })
 }
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: authService.forgotPassword,
+  })
+}
