@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const { Usuario } = require('../models')
 
 const SALT_ROUNDS = 10
+const loginAttempts = {}
 
 const generateToken = (user) =>
   jwt.sign(
@@ -34,11 +35,35 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body
 
-    const user = await Usuario.findOne({ where: { email, activo: true } })
-    if (!user) return res.status(401).json({ message: 'Credenciales incorrectas.' })
+    const user = await Usuario.findOne({ where: { email } })
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales incorrectas.' })
+    }
+
+    if (!user.activo) {
+      return res.status(403).json({ message: 'Tu cuenta está inactiva o bloqueada. Restablece tu contraseña para desbloquearla.' })
+    }
 
     const valid = await bcrypt.compare(password, user.password)
-    if (!valid) return res.status(401).json({ message: 'Credenciales incorrectas.' })
+    if (!valid) {
+      const currentAttempts = (loginAttempts[email] || 0) + 1
+      loginAttempts[email] = currentAttempts
+
+      if (currentAttempts >= 3) {
+        await user.update({ activo: false })
+        delete loginAttempts[email]
+        return res.status(403).json({
+          message: 'Tu cuenta ha sido bloqueada debido a 3 intentos fallidos. Por favor, utiliza la opción "¿Olvidaste tu contraseña?" para desbloquearla.'
+        })
+      }
+
+      const remaining = 3 - currentAttempts
+      return res.status(401).json({
+        message: `Credenciales incorrectas. Te quedan ${remaining} ${remaining === 1 ? 'intento' : 'intentos'}.`
+      })
+    }
+
+    delete loginAttempts[email]
 
     const token = generateToken(user)
     res.json({ user: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol }, token })
@@ -70,7 +95,9 @@ const forgotPassword = async (req, res, next) => {
 
     const tempPassword = 'conyapa123'
     const hashedPassword = await bcrypt.hash(tempPassword, SALT_ROUNDS)
-    await user.update({ password: hashedPassword })
+    await user.update({ password: hashedPassword, activo: true })
+
+    delete loginAttempts[email]
 
     res.json({ message: 'Contraseña restablecida con éxito.', tempPassword })
   } catch (err) {
