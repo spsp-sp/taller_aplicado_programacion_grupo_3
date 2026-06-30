@@ -45,3 +45,16 @@ export function useForgotPassword() {
     mutationFn: authService.forgotPassword,
   })
 }
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: authService.changePassword,
+    onSuccess: () => {
+      toast.success('¡Contraseña actualizada con éxito!')
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Error al cambiar la contraseña')
+    },
+  })
+}
+

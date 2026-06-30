@@ -78,4 +78,25 @@ const forgotPassword = async (req, res, next) => {
   }
 }
 
-module.exports = { register, login, me, forgotPassword }
+// POST /api/auth/change-password
+const changePassword = async (req, res, next) => {
+  try {
+    const { passwordActual, passwordNuevo } = req.body
+
+    const user = await Usuario.findByPk(req.user.id)
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' })
+
+    const valid = await bcrypt.compare(passwordActual, user.password)
+    if (!valid) return res.status(400).json({ message: 'La contraseña actual es incorrecta.' })
+
+    const hashedPassword = await bcrypt.hash(passwordNuevo, SALT_ROUNDS)
+    await user.update({ password: hashedPassword })
+
+    res.json({ message: 'Contraseña actualizada con éxito.' })
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { register, login, me, forgotPassword, changePassword }
+
