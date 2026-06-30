@@ -1,21 +1,45 @@
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'conyapa_db',
-  process.env.DB_USER || 'postgres',
-  process.env.DB_PASSWORD || 'password',
-  {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
+let sequelize;
+
+if (process.env.DATABASE_URL) {
+  // Producción (Neon + Render)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    protocol: 'postgres',
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
     pool: {
       max: 5,
       min: 0,
       acquire: 30000,
-      idle: 10000,
-    },
-  }
-)
+      idle: 10000
+    }
+  });
+} else {
+  // Desarrollo local
+  sequelize = new Sequelize(
+    process.env.DB_NAME || 'conyapa_db',
+    process.env.DB_USER || 'postgres',
+    process.env.DB_PASSWORD || 'password',
+    {
+      host: process.env.DB_HOST || 'localhost',
+      port: process.env.DB_PORT || 5432,
+      dialect: 'postgres',
+      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+      }
+    }
+  );
+}
 
-module.exports = { sequelize }
+module.exports = { sequelize };
