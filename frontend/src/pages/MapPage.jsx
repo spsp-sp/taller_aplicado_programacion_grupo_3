@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import { useEffect, useState, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import { MapPin, Navigation, ChevronDown, Filter } from 'lucide-react'
 import L from 'leaflet'
 import useGeolocation from '@hooks/useGeolocation'
@@ -329,7 +329,7 @@ export default function MapPage() {
                             if (urlUbi && Number(urlUbi) !== ubicacion.id) return null;
 
                             return (
-                                <Marker
+                                <Link
                                     key={`${feria.id}-${ubicacion.id}`}
                                     position={[Number(ubicacion.latitud), Number(ubicacion.longitud)]}
                                     icon={feriaIcono}
@@ -364,7 +364,7 @@ export default function MapPage() {
                                             </a>
                                         </div>
                                     </Popup>
-                                </Marker>
+                                </Link>
                             );
                         })
                     )}
