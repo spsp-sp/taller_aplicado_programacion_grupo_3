@@ -92,7 +92,7 @@ export default function FeriantesPage() {
               onChange={(e) => setComunaFilter(e.target.value)}
             >
               <option value="">Todas las comunas</option>
-              {comunas.map(comuna => (
+              {Array.isArray(comunas) && comunas.map(comuna => (
                 <option key={comuna.id} value={comuna.id}>{comuna.nombre}</option>
               ))}
             </select>
@@ -109,7 +109,7 @@ export default function FeriantesPage() {
               onChange={(e) => setRubroFilter(e.target.value)}
             >
               <option value="">Todos los rubros</option>
-              {todosLosRubrosSistema.map(rubro => (
+              {Array.isArray(todosLosRubrosSistema) && todosLosRubrosSistema.map(rubro => (
                 <option key={rubro} value={rubro}>{rubro}</option>
               ))}
             </select>
@@ -131,7 +131,7 @@ export default function FeriantesPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-500">Cargando feriantes...</p>
           </div>
-        ) : feriantes.length > 0 ? (
+        ) : Array.isArray(feriantes) && feriantes.length > 0 ? (
           feriantes.map((f) => (
             <div key={f.id} className={`card overflow-hidden transition-all duration-300 ${expandedId === f.id ? 'ring-2 ring-primary-500 border-transparent shadow-md' : ''}`}>
               <div className="flex justify-between items-center p-6">
