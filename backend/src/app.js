@@ -20,8 +20,26 @@ app.use(helmet())
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 
 // ── CORS ───────────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+]
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Permitir peticiones sin origen (como Postman o peticiones del propio servidor)
+    if (!origin) return callback(null, true)
+
+    const isLocal = allowedOrigins.includes(origin) || /^http:\/\/localhost(:\d+)?$/.test(origin)
+    const isVercel = /^https:\/\/taller-aplicado-programacion-grupo-3.*\.vercel\.app$/.test(origin)
+    const isConfigured = origin === process.env.FRONTEND_URL
+
+    if (isLocal || isVercel || isConfigured) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
 }))
 
