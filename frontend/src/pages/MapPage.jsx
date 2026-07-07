@@ -250,7 +250,7 @@ export default function MapPage() {
                                     onChange={(e) => handleFilterChange('comunaId', e.target.value)}
                                 >
                                     <option value="">Todas las comunas</option>
-                                    {comunas.map(c => (
+                                    {Array.isArray(comunas) && comunas.map(c => (
                                         <option key={c.id} value={c.id}>{c.nombre}</option>
                                     ))}
                                 </select>
@@ -324,7 +324,7 @@ export default function MapPage() {
                     )}
 
                     {/* Marcadores de ferias */}
-                    {ferias.map((feria) =>
+                    {Array.isArray(ferias) && ferias.map((feria) =>
                         feria.ubicaciones?.map((ubicacion) => {
                             if (urlUbi && Number(urlUbi) !== ubicacion.id) return null;
 

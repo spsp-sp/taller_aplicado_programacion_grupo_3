@@ -54,7 +54,7 @@ export default function FeriasPage() {
                                 onChange={(e) => setFilters({ ...filters, comunaId: e.target.value })}
                             >
                                 <option value="">Todas las comunas</option>
-                                {comunas.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+                                {Array.isArray(comunas) && comunas.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                             </select>
                         </div>
 
@@ -93,7 +93,7 @@ export default function FeriasPage() {
 
                 {/* LISTA DE RESULTADOS */}
                 <div className="space-y-6">
-                    {ferias.length === 0 ? (
+                    {!Array.isArray(ferias) || ferias.length === 0 ? (
                         <div className="bg-white border-2 border-dashed border-gray-200 rounded-3xl py-20 px-10 text-center flex flex-col items-center justify-center">
                             <Search size={30} className="text-gray-300 mb-2" />
                             <p className="text-gray-500 font-medium">No se encontraron ferias con estos criterios.</p>
